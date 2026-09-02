@@ -1,0 +1,85 @@
+generated: '2026-09-02'
+method: searched
+source: https://github.com/ehrbase/ehrbase/blob/develop/CHANGELOG.md
+docs: https://github.com/ehrbase/ehrbase/blob/develop/CHANGELOG.md
+releases: https://github.com/ehrbase/ehrbase/releases
+breaking_changes: https://github.com/ehrbase/ehrbase/blob/develop/UPDATING.md
+scheme: keep-a-changelog
+versioning: semver
+current_version: 2.35.1
+current_version_date: '2026-08-20'
+note: >-
+  The real changelog is CHANGELOG.md in the server repository, kept in Keep a Changelog
+  format and dated by the matching GitHub release tag. Breaking changes are split out
+  into UPDATING.md. NOTE: docs.ehrbase.org/releases is a Docusaurus blog that still
+  contains only the framework's template posts ("Welcome", "First Blog Post", authored
+  by the Docusaurus maintainers) - it is NOT an EHRbase changelog and should not be
+  cited as one. The openEHR_SDK keeps its own separate CHANGELOG.md.
+sibling_changelogs:
+  - repo: ehrbase/openEHR_SDK
+    url: https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md
+    current_version: 2.35.0
+    current_version_date: '2026-08-17'
+  - repo: ehrbase/ehrbase (breaking changes)
+    url: https://github.com/ehrbase/ehrbase/blob/develop/UPDATING.md
+entries:
+  - version: 2.35.1
+    date: '2026-08-20'
+    breaking: false
+    fixed:
+      - >-
+        Fixes possibly misplaced or removed folder items when retrieving a directory,
+        and corruption of the folder history. Since 2.30.0 the order of references to
+        compositions may have changed, references may have disappeared, or appeared in
+        a different subfolder. (PR #1648)
+  - version: 2.35.0
+    date: '2026-08-17'
+    breaking: false
+    highlights: []
+  - version: 2.34.0
+    date: '2026-07-08'
+    breaking: false
+    highlights: []
+  - version: 2.33.0
+    date: '2026-06-16'
+    breaking: false
+    added:
+      - Option to rely on ValueSet expansion for FHIR terminology validation (PR #1636)
+    fixed:
+      - >-
+        (openEHR_SDK 2.33.1) String primitives that could represent compact temporals
+        are no longer transformed to extended format when executing AQL (SDK PR #752)
+      - Validation of DV_CODED_TEXT.value for template-defined terminologies (PR #1636)
+  - version: 2.32.0
+    date: '2026-06-09'
+    breaking: false
+    added:
+      - Support for partial time (PR #1633, SDK PR #747)
+    fixed:
+      - Terminology fixes (PR #1616)
+      - Improved external terminology validation performance and stability (PR #1623)
+      - Added metrics for external FHIR terminology server HTTP calls (PR #1623)
+      - Validation of limits of intervals with partial dates (PR #1633)
+      - Prevent mixing of long and short time format (PR #1633)
+  - version: 2.31.0
+    date: '2026-04-28'
+    breaking: false
+    changed:
+      - Improved template cache configuration (PR #1618)
+      - Improved performance of template service (PR #1618)
+  - version: 2.30.1
+    date: '2026-04-16'
+    breaking: false
+    highlights: []
+  - version: 2.30.0
+    date: '2026-03-24'
+    breaking: true
+    added:
+      - RM constraint validation for DIRECTORY, behind a feature toggle (PR #1584)
+    changed:
+      - Update to Java 25 (PR #1595)
+      - Changed history DB model for better compression (PR #1584)
+    migration_note: >-
+      UPDATING.md records that the new data model for history data requires a full
+      migration of the history tables, and that missing archetype_node_ids are added
+      to FOLDER entries during migration - both of which may take a while.

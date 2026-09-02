@@ -1,0 +1,135 @@
+generated: '2026-09-02'
+method: derived
+source: >-
+  openapi/_original/ehrbase-api-openapi.json (4xx/5xx responses across 63 operations),
+  enriched from https://specifications.openehr.org/releases/ITS-REST/latest/ and
+  https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+format: http-status-codes
+rfc9457: false
+note: >-
+  EHRbase does NOT publish an RFC 9457 problem+json envelope, and its OpenAPI declares
+  error responses as bare status codes with no schema, no description and no example -
+  57 of the 63 operations declare only a 2xx. That is the finding: an agent calling
+  this API cannot learn the failure shape from the contract. The catalog below is
+  derived from the status codes that ARE declared, with the openEHR ITS-REST semantics
+  that give each one its meaning. Titles and remediation are the standard's, not
+  invented EHRbase text.
+envelope:
+  media_type: none-declared
+  detail: >-
+    No error schema is present in components.schemas and no application/problem+json
+    response is declared anywhere in the contract.
+coverage:
+  operations_total: 63
+  operations_declaring_any_4xx_or_5xx: 21
+  operations_declaring_only_2xx: 42
+problem_types:
+  - status: 400
+    id: bad-request
+    title: Bad Request
+    count: 7
+    meaning: >-
+      The submitted openEHR object failed validation - malformed JSON/XML, a
+      composition that does not conform to its operational template, a coded value
+      outside the constrained terminology ValueSet, or a malformed version_uid.
+    remediation: >-
+      Validate the composition against the operational template
+      (GET /rest/openehr/v1/definition/template/adl1.4/{template_id}/webtemplate)
+      before submitting. External FHIR terminology validation is also applied to coded
+      elements.
+    operations: [createEhr, createEhrWithId, createDirectory, updateDirectory, deleteDirectory, updateEhrStatus, getEhrStatusVersionByTime]
+  - status: 401
+    id: unauthorized
+    title: Unauthorized
+    count: 10
+    meaning: >-
+      No credential presented, or the bearer JWT failed validation against the
+      configured issuer. Only appears on Admin API operations, because the standard
+      openEHR surface is documented without per-operation auth responses.
+    remediation: >-
+      Present HTTP Basic credentials or an OAuth2 bearer JWT per
+      authentication/ehrbase-authentication.yml. The default deployment posture is
+      AUTH_TYPE=NONE, in which case 401 will never be seen.
+    operations: [updateEhr, deleteEhr, deleteComposition_1, deleteDirectory_1, updateContribution, deleteStoredQuery, deleteTemplate, deleteAllTemplates, updateTemplate, getStatus]
+  - status: 403
+    id: forbidden
+    title: Forbidden
+    count: 10
+    meaning: >-
+      Authenticated, but the principal lacks the admin role. Every Admin API operation
+      requires it (realm_access.roles / scope claim = ADMIN under OAuth2, or the
+      configured SECURITY_AUTHADMINUSER under Basic).
+    remediation: Use an admin-role principal, or call the equivalent operation on /rest/openehr/v1.
+    operations: [updateEhr, deleteEhr, deleteComposition_1, deleteDirectory_1, updateContribution, deleteStoredQuery, deleteTemplate, deleteAllTemplates, updateTemplate, getStatus]
+  - status: 404
+    id: not-found
+    title: Not Found
+    count: 19
+    meaning: >-
+      The addressed EHR, composition, directory, folder, template or stored query does
+      not exist - or, on time-travel reads, no version existed at the requested
+      version_at_time.
+    remediation: >-
+      Resolve the EHR first (GET /rest/openehr/v1/ehr?subject_id=...) and use the
+      returned ehr_id. For time-scoped reads, check the revision history endpoints for
+      the valid version window.
+    operations: [getEhrById, getEhrBySubject, getEhrStatusByVersionId, getEhrStatusVersionByTime, getFolderInDirectory, getFolderInDirectoryVersionAtTime, createDirectory, deleteDirectory, updateEhr, deleteEhr, deleteComposition_1, deleteDirectory_1, updateContribution, deleteStoredQuery, deleteTemplate, deleteAllTemplates, updateTemplate]
+  - status: 409
+    id: conflict
+    title: Conflict
+    count: 2
+    meaning: An EHR already exists for the supplied ehr_id or subject.
+    remediation: >-
+      Treat 409 as the success case of an idempotent retry - the EHR you intended to
+      create is already there. GET it instead of re-creating.
+    operations: [createEhr, createEhrWithId]
+  - status: 412
+    id: precondition-failed
+    title: Precondition Failed
+    count: 3
+    meaning: >-
+      The If-Match version_uid does not match the current head version - a concurrent
+      writer got there first. This is openEHR's lost-update guard.
+    remediation: >-
+      Re-read the current version (revision_history or the versioned_* endpoints),
+      rebase your change onto it, and retry with the new version_uid in If-Match.
+      Never retry blind.
+    operations: [updateEhrStatus, updateDirectory, deleteDirectory]
+  - status: 422
+    id: unprocessable-entity
+    title: Unprocessable Entity
+    count: 3
+    meaning: >-
+      Template operation refused because the template is still in use - compositions
+      reference it - or the replacement template is not backwards compatible.
+    remediation: >-
+      Remove or migrate the referencing compositions before deleting or replacing an
+      operational template.
+    operations: [updateTemplate, deleteTemplate, deleteAllTemplates]
+    docs: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - status: 501
+    id: not-implemented
+    title: Not Implemented
+    count: 1
+    meaning: >-
+      DELETE /rest/admin/ehr/{ehr_id}/contribution/{contribution_id} declares 501 as
+      its ONLY response - the operation is published in the contract but not
+      implemented by the server.
+    remediation: >-
+      Do not call deleteContribution. Use the enterprise Transaction Compensation API
+      to roll a contribution back, or delete the EHR wholesale via
+      DELETE /rest/admin/ehr/{ehr_id}.
+    operations: [deleteContribution]
+gaps:
+  - >-
+    No error codes, no error identifiers, no machine-readable error body. An agent
+    must branch on HTTP status alone.
+  - >-
+    No 429 anywhere in the contract - there is no documented throttling response.
+  - >-
+    No 500/503 declared on any operation, so server-side failure shape is
+    undocumented.
+  - >-
+    The 42 operations that declare only a 2xx include every composition write, every
+    AQL query execution and every versioned-object read - the busiest paths in the API
+    are the least documented for failure.

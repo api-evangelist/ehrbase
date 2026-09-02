@@ -1,0 +1,62 @@
+generated: '2026-09-02'
+method: probed
+source: >-
+  https://www.ehrbase.org/.well-known/oauth-protected-resource,
+  https://www.ehrbase.org/.well-known/oauth-authorization-server,
+  live POST tools/list against https://www.ehrbase.org/wp-json/mcp/mcp-oauth-server on 2026-09-02
+status: live
+note: >-
+  READ THIS BEFORE USING IT. ehrbase.org DOES serve a real, reachable, OAuth-protected
+  remote MCP endpoint - but it belongs to the WordPress marketing site, not to the
+  EHRbase clinical data repository. It was discovered through the RFC 9728
+  protected-resource metadata document at
+  https://www.ehrbase.org/.well-known/oauth-protected-resource, which names
+  https://www.ehrbase.org/wp-json/mcp/mcp-oauth-server as the resource with
+  scopes_supported ["mcp"]. The wp-json namespace listing confirms a WordPress
+  Abilities API + MCP adapter is installed (namespaces include "mcp" and
+  "wp-abilities/v1"). There is NO MCP server for the openEHR REST API itself, and
+  EHRbase - being software each customer self-hosts - has no hosted API to put behind
+  one. Do not present this endpoint as a way for an agent to read or write clinical
+  data; it is a website-content surface.
+deployment:
+  mode: remote
+  endpoint: https://www.ehrbase.org/wp-json/mcp/mcp-oauth-server
+  auth: oauth
+  verified: probed
+  scope: website-content
+  covers_api: false
+probe:
+  request: 'POST {"jsonrpc":"2.0","id":1,"method":"tools/list"} with Accept: application/json, text/event-stream'
+  http_status: 401
+  response_body: '{"code":"mcp_unauthorized","message":"MCP authentication required.","data":{"status":401}}'
+  www_authenticate: >-
+    Bearer realm="https://www.ehrbase.org",
+    resource_metadata="https://www.ehrbase.org/.well-known/oauth-protected-resource"
+  allow: POST, GET, DELETE
+  conclusion: >-
+    The live tool schema is auth-gated. tools/list requires a bearer token, so no
+    inputSchema could be captured. The RFC 9728 challenge flow is implemented
+    correctly, which is itself evidence this is a deliberately published MCP surface
+    rather than an accident.
+oauth:
+  authorization_server: https://www.ehrbase.org
+  metadata: https://www.ehrbase.org/.well-known/oauth-authorization-server
+  authorization_endpoint: https://www.ehrbase.org/oauth/authorize
+  token_endpoint: https://www.ehrbase.org/oauth/token
+  revocation_endpoint: https://www.ehrbase.org/oauth/revoke
+  grant_types_supported: [authorization_code, refresh_token]
+  code_challenge_methods_supported: [S256]
+  scopes_supported: [mcp]
+  token_endpoint_auth_methods_supported: [none]
+  client_id_metadata_document_supported: true
+tools:
+  count: null
+  detail: Not enumerable anonymously - see probe.conclusion.
+api_mcp_server:
+  exists: false
+  detail: >-
+    No MCP server is published for the EHRbase openEHR REST API by the project or by
+    vitagroup. A candidate tool set could be derived from the 63 published operations,
+    but deriving one here would misrepresent a self-hosted server as an agent-callable
+    endpoint - each deployer would have to run it themselves against their own
+    instance. Recorded as absent rather than invented.

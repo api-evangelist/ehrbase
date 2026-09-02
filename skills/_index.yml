@@ -1,0 +1,34 @@
+generated: '2026-09-02'
+method: generated
+source: >-
+  openapi/_original/ehrbase-api-openapi.json (all operationIds verified against the
+  published contract), conventions/ehrbase-conventions.yml, errors/ehrbase-problem-types.yml
+provider: EHRbase
+api: EHRbase openEHR REST API (openEHR ITS-REST 1.0.2)
+note: >-
+  Four packaged Agent Skills covering the marquee flows of an openEHR clinical data
+  repository. Every operationId referenced was grepped out of the harvested contract -
+  none are invented. EHRbase publishes no skills or AGENTS.md of its own; these are
+  API Evangelist generations grounded in the provider's own spec and docs.
+base_url_warning: >-
+  EHRbase is self-hosted software. There is no vendor-operated base URL. Every skill
+  assumes the caller supplies their own deployment host; the public sandbox
+  (https://sandkiste.ehrbase.org/ehrbase) is shared, resettable and must never receive
+  real patient data.
+skills:
+  - name: ehrbase-create-and-populate-ehr
+    file: ehrbase-create-and-populate-ehr.md
+    summary: Create an EHR and commit the first COMPOSITION into it.
+    operations: [createEhr, createEhrWithId, getEhrBySubject, getEhrById, getTemplatesClassic, getWebTemplate, createComposition, getComposition]
+  - name: ehrbase-query-with-aql
+    file: ehrbase-query-with-aql.md
+    summary: Ad-hoc and stored Archetype Query Language execution.
+    operations: [executeAdHocQuery, executeAdHocQuery_1, putStoredQuery, putStoredQuery_1, getStoredQueryList, getStoredQueryList_1, getStoredQueryVersion, executeStoredQuery, executeStoredQuery_1, executeStoredQuery_2, executeStoredQuery_3, getWebTemplate]
+  - name: ehrbase-update-composition-safely
+    file: ehrbase-update-composition-safely.md
+    summary: Versioned updates with If-Match, 412 recovery, and what delete really does.
+    operations: [getComposition, updateComposition, deleteComposition, retrieveVersionedCompositionByVersionedObjectUid, retrieveVersionedCompositionRevisionHistoryByEhr, retrieveVersionOfCompositionByVersionUid, retrieveVersionOfCompositionByTime, updateEhrStatus, updateDirectory, deleteDirectory]
+  - name: ehrbase-manage-templates
+    file: ehrbase-manage-templates.md
+    summary: Load, project and retire operational templates; the admin-only deletion path.
+    operations: [getTemplatesClassic, createTemplateClassic, getTemplateClassic, getWebTemplate, getTemplateExample, getTemplatesNew, createTemplateNew, getTemplateNew, updateTemplate, deleteTemplate, deleteAllTemplates]

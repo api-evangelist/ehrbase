@@ -1,0 +1,69 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist overlay for EHRbase Admin API
+  version: 1.0.0
+  x-generated: '2026-09-02'
+  x-method: generated
+  x-source: openapi/ehrbase-admin-api-openapi.json
+  x-note: Captures API Evangelist enhancements over the harvested EHRbase contract. Applies on top of
+    the original document; the original is never mutated.
+extends: openapi/ehrbase-admin-api-openapi.json
+actions:
+- target: $.info
+  description: Record what this document actually is and where it came from.
+  update:
+    x-apievangelist:
+      harvested-from: https://sandkiste.ehrbase.org/ehrbase/v3/api-docs/admin
+      harvested: '2026-09-02'
+      surface: EHRbase Admin API
+      note: Opt-in administrative surface; admin role only, physical deletes.
+      ownership: info.title "EHRbase API", license Apache-2.0 at github.com/ehrbase/ehrbase, servers[]
+        sandkiste.ehrbase.org (the project own public sandbox). Contract confirmed to belong to EHRbase.
+    x-standard:
+      name: openEHR ITS-REST
+      version: 1.0.2
+      reference-model: 1.1.0
+      body: openEHR International
+      specification: https://specifications.openehr.org/releases/ITS-REST/latest/
+    x-license-spdx: Apache-2.0
+- target: $
+  description: Point at the cross-cutting semantics this document does not carry inline.
+  update:
+    x-conventions: conventions/ehrbase-conventions.yml
+    x-authentication: authentication/ehrbase-authentication.yml
+    x-errors: errors/ehrbase-problem-types.yml
+    x-data-model: data-model/ehrbase-data-model.yml
+    x-conformance: conformance/ehrbase-conformance.yml
+- target: $.servers
+  description: The single server is a shared public sandbox, not a production host. Say so.
+  update:
+  - url: https://sandkiste.ehrbase.org/ehrbase
+    description: EHRbase public sandbox (Sandkiste). Shared, resettable, unauthenticated. Not for real
+      patient data.
+    x-environment: sandbox
+  - url: '{scheme}://{host}/ehrbase'
+    description: Any self-hosted EHRbase deployment. EHRbase is software you run; there is no vendor-operated
+      production host.
+    x-environment: self-hosted
+    variables:
+      scheme:
+        default: https
+        enum:
+        - https
+        - http
+      host:
+        default: localhost:8080
+- target: $.paths['/rest/admin/ehr/{ehr_id}/contribution/{contribution_id}'].delete
+  description: This operation declares 501 Not Implemented as its only response. Mark it so a client generator
+    does not emit it as usable.
+  update:
+    deprecated: true
+    x-not-implemented: true
+    x-apievangelist-note: Published in the contract but returns 501. Use the enterprise Transaction Compensation
+      API, or DELETE /rest/admin/ehr/{ehr_id}.
+- target: $.paths.*.*
+  description: Every Admin API operation is gated on the admin role and performs a physical, irreversible
+    change.
+  update:
+    x-requires-role: admin
+    x-consequence: irreversible

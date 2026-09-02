@@ -1,0 +1,56 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  https://github.com/ehrbase/ehrbase/tree/develop/cli,
+  https://raw.githubusercontent.com/ehrbase/ehrbase/develop/cli/src/main/java/org/ehrbase/cli/cmd/CliDataBaseCommand.java,
+  https://raw.githubusercontent.com/ehrbase/ehrbase/develop/cli/src/main/java/org/ehrbase/cli/cmd/CliHelpCommand.java,
+  https://github.com/ehrbase/migration-tool
+name: EHRbase CLI
+note: >-
+  EHRbase ships a small operator CLI inside the server distribution itself (the `cli`
+  Maven module, org.ehrbase.openehr:cli), not a separate API client. It is an
+  operations tool for database connectivity and Flyway schema migration - there is no
+  CLI for the openEHR REST surface. The command surface below is read from the source,
+  because the CLI is not covered on docs.ehrbase.org.
+scope: operations
+covers_api_surface: false
+install:
+  - method: bundled
+    detail: >-
+      Included in the EHRbase server jar and the ehrbase/ehrbase Docker image;
+      invoked with the `cli` argument instead of starting the web server.
+  - method: maven
+    package: org.ehrbase.openehr:cli
+    version: 2.35.1
+    published: '2026-08-20'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr/cli
+commands:
+  - group: database
+    invocation: cli database [flags]
+    example: cli database --check-connection --migration-validate
+    flags:
+      - flag: --check-connection
+        description: Verifies database access by opening and closing a connection.
+      - flag: --migration-validate
+        description: Validate the Flyway migration.
+      - flag: --migration-migrate
+        description: Executes the Flyway migration.
+  - group: help
+    invocation: cli help
+    description: Prints the available commands; exits non-zero on an unknown command.
+related_tools:
+  - name: EHRbase 2 Migration Tool
+    kind: standalone jar + Docker image
+    repo: https://github.com/ehrbase/migration-tool
+    image: ehrbase/migration-tool
+    version: 1.2.0
+    published: '2024-06-10'
+    invocation: >-
+      java -jar application/target/migration-tool.jar -Dmode=DB2DB
+      -Dspring.datasource.import.url=... -Dspring.datasource.export.url=...
+    description: >-
+      One-shot migration of an EHRbase 0.x database into an empty EHRbase 2 database.
+      Documented in UPDATING.md as the supported pre-2.0.0 upgrade path.
+gaps:
+  - No client-side CLI for calling the openEHR REST API (no `ehrbase ehr create`-style verbs).
+  - The CLI is undocumented on docs.ehrbase.org; the only reference is the source.

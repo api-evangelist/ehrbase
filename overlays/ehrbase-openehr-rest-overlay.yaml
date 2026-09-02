@@ -1,0 +1,78 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist overlay for EHRbase openEHR REST API
+  version: 1.0.0
+  x-generated: '2026-09-02'
+  x-method: generated
+  x-source: openapi/ehrbase-openehr-rest-api-openapi.json
+  x-note: Captures API Evangelist enhancements over the harvested EHRbase contract. Applies on top of
+    the original document; the original is never mutated.
+extends: openapi/ehrbase-openehr-rest-api-openapi.json
+actions:
+- target: $.info
+  description: Record what this document actually is and where it came from.
+  update:
+    x-apievangelist:
+      harvested-from: https://sandkiste.ehrbase.org/ehrbase/v3/api-docs/openehr-rest
+      harvested: '2026-09-02'
+      surface: EHRbase openEHR REST API
+      note: The standard openEHR ITS-REST 1.0.2 surface.
+      ownership: info.title "EHRbase API", license Apache-2.0 at github.com/ehrbase/ehrbase, servers[]
+        sandkiste.ehrbase.org (the project own public sandbox). Contract confirmed to belong to EHRbase.
+    x-standard:
+      name: openEHR ITS-REST
+      version: 1.0.2
+      reference-model: 1.1.0
+      body: openEHR International
+      specification: https://specifications.openehr.org/releases/ITS-REST/latest/
+    x-license-spdx: Apache-2.0
+- target: $
+  description: Point at the cross-cutting semantics this document does not carry inline.
+  update:
+    x-conventions: conventions/ehrbase-conventions.yml
+    x-authentication: authentication/ehrbase-authentication.yml
+    x-errors: errors/ehrbase-problem-types.yml
+    x-data-model: data-model/ehrbase-data-model.yml
+    x-conformance: conformance/ehrbase-conformance.yml
+- target: $.servers
+  description: The single server is a shared public sandbox, not a production host. Say so.
+  update:
+  - url: https://sandkiste.ehrbase.org/ehrbase
+    description: EHRbase public sandbox (Sandkiste). Shared, resettable, unauthenticated. Not for real
+      patient data.
+    x-environment: sandbox
+  - url: '{scheme}://{host}/ehrbase'
+    description: Any self-hosted EHRbase deployment. EHRbase is software you run; there is no vendor-operated
+      production host.
+    x-environment: self-hosted
+    variables:
+      scheme:
+        default: https
+        enum:
+        - https
+        - http
+      host:
+        default: localhost:8080
+- target: $.paths['/rest/openehr/v1/ehr/{ehr_id}/composition'].post
+  description: No idempotency key exists on this operation - a retried POST creates a second version.
+  update:
+    x-idempotent: false
+    x-retry-guidance: Read back /ehr/{ehr_id}/contribution before retrying after an ambiguous timeout.
+- target: $.paths['/rest/openehr/v1/ehr/{ehr_id}'].put
+  description: Client-supplied identifier create - safe to retry; a duplicate returns 409.
+  update:
+    x-idempotent: true
+    x-duplicate-status: 409
+- target: $.paths['/rest/openehr/v1/ehr/{ehr_id}/composition/{versioned_object_uid}'].put
+  description: 'Optimistic concurrency: If-Match carries the preceding version_uid; a stale value fails
+    412.'
+  update:
+    x-concurrency: if-match
+    x-conflict-status: 412
+    x-reversible: logical (append a new version)
+- target: $.paths['/rest/openehr/v1/query/aql'].post
+  description: AQL is the query language; result-set bounding happens inside the query, not through pagination
+    parameters.
+  update:
+    x-query-language: AQL
+    x-pagination: in-query (LIMIT/OFFSET)

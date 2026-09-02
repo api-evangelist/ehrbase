@@ -1,0 +1,87 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Event-Trigger,
+  https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Overview
+asyncapi_spec_published: false
+note: >-
+  EHRbase DOES have an event surface and it is documented, but no AsyncAPI document is
+  published for it - so this artifact is a webhook/event catalog, not an AsyncAPI spec,
+  and nothing has been fabricated to fill the gap. The surface is the Event Trigger
+  feature, part of the commercial HIP EHRbase distribution: rules written in AQL are
+  evaluated on composition create/update and the matching data is propagated outward.
+  The open-source distribution has no event or webhook surface at all - the only
+  outbound calls it makes are to external FHIR terminology servers during validation.
+tier: enterprise
+docs: https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Event-Trigger
+surface:
+  name: Event Trigger
+  model: rule-driven outbound push
+  trigger_events:
+    - id: composition.created
+      detail: Hooks into COMPOSITION creation.
+    - id: composition.updated
+      detail: Hooks into COMPOSITION update.
+  timing:
+    modes:
+      - before internal database transaction completes
+      - after internal database transaction completes
+    note: >-
+      The trigger declares which side of the transaction boundary it fires on. Docs
+      state both are supported.
+  selection:
+    language: AQL
+    detail: >-
+      "criteria can be flexibly defined and linked to actions" - the criteria are
+      Archetype Query Language expressions evaluated against the incoming composition,
+      so a subscriber can select on clinical content (e.g. a threshold breach on an
+      observation) rather than only on the event type.
+  payload:
+    detail: >-
+      Operator-configured projection - "the patient ID and selected values can be sent
+      to a receiving system", and a rule can forward all incoming data to an external
+      data warehouse. No fixed schema is published.
+    schema_published: false
+transports:
+  - id: http
+    label: HTTP request (webhook)
+    auth:
+      - HTTP Basic
+      - OAuth2 Bearer
+    tls:
+      supported: true
+      detail: >-
+        SSL/TLS can be enabled for HTTP event triggers, enforcing mutual authentication
+        between client and server so sensitive data is not sent in plain text.
+    endpoint_allowlist:
+      supported: true
+      detail: >-
+        HTTP endpoints callable by a trigger can be pre-configured. If no endpoint is
+        configured for a trigger, an exception is thrown; a looser mode allows any HTTP
+        endpoint while still preferring a configured one. HTTP triggers can also be
+        disabled entirely, which causes any configured trigger to be ignored.
+  - id: amqp
+    label: AMQP via RabbitMQ
+  - id: kafka
+    label: Apache Kafka
+  - id: java-logging
+    label: Java logging sink
+multi_tenancy:
+  detail: In combination with the multi-tenancy feature, event triggers are tenant-bound.
+related_surfaces:
+  - name: Transaction Compensation
+    kind: inbound REST API (enterprise)
+    detail: >-
+      A REST API external services call to roll a CONTRIBUTION back per the Saga
+      pattern. Not an event surface, but the compensating half of the same distributed
+      workflow.
+    docs: https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Transaction-Compensation
+  - name: IHE ATNA audit logging
+    kind: outbound syslog over TLS (enterprise)
+    detail: Access events streamed to an ATNA audit repository, not to application subscribers.
+    docs: https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/ATNA
+gaps:
+  - No AsyncAPI document, no event schema, no published payload contract.
+  - No event catalog with named event types - the rules are operator-authored AQL.
+  - No delivery guarantees, retry policy or dead-letter behaviour documented.
+  - Not available in the Apache-2.0 open-source distribution.

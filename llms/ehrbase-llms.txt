@@ -1,0 +1,126 @@
+# EHRbase
+
+> EHRbase is an open source openEHR Clinical Data Repository (CDR) — a standards-based
+> backend for storing, versioning and querying structured clinical data. It implements
+> openEHR ITS-REST 1.0.2 against openEHR Reference Model 1.1.0, and is queried with the
+> Archetype Query Language (AQL). It is Apache-2.0 licensed, self-hosted software
+> maintained by vitagroup AG together with the openEHR community; a commercial
+> distribution with enterprise features and SLAs is sold as HIP EHRbase.
+
+<!--
+generated: 2026-09-02
+method: generated
+source: apis.yml + this repository's artifacts; no /llms.txt is published by EHRbase
+        (https://www.ehrbase.org/llms.txt -> 404, https://docs.ehrbase.org/llms.txt -> 404)
+-->
+
+## What you can actually call
+
+EHRbase is software you run, not a hosted API. There is no api.ehrbase.org, no signup,
+no API key and no rate limit. Every deployment is a separate instance with its own base
+URL, so the base URL below is the project's PUBLIC SANDBOX — real, live and open, but
+shared and resettable. Never put real patient data in it.
+
+- Sandbox base URL: https://sandkiste.ehrbase.org/ehrbase
+- Live OpenAPI 3.1.0: https://sandkiste.ehrbase.org/ehrbase/v3/api-docs
+- Swagger UI: https://sandkiste.ehrbase.org/ehrbase/swagger-ui/index.html
+- Version heartbeat: GET /rest/status
+
+## API surfaces
+
+- `/rest/openehr/v1/**` — the standard openEHR REST API (31 paths). EHR, EHR_STATUS,
+  COMPOSITION, VERSIONED_COMPOSITION, CONTRIBUTION, DIRECTORY, DEFINITION (templates +
+  stored queries) and QUERY. This is what you should integrate against.
+- `/rest/openehr/v1/query/aql` — ad-hoc AQL execution (GET and POST).
+- `/rest/admin/**` — Admin API. Hard deletes and template management. Disabled by
+  default, admin role only, returns 401/403 otherwise.
+- `/rest/ecis/v1/**` — EHRscape/ECIS, a legacy simplified API. Undocumented; prefer the
+  openEHR surface.
+- `/rest/status` and `/management/**` — heartbeat and Spring Boot Actuator metrics.
+
+## Docs
+
+- Documentation: https://docs.ehrbase.org/
+- API reference: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+- Getting started / install: https://docs.ehrbase.org/docs/EHRbase/Installation
+- openEHR introduction: https://docs.ehrbase.org/docs/category/openehr-introduction
+- AQL: https://docs.ehrbase.org/docs/category/archetype-query-language
+- Simplified Data Template (flat/structured JSON): https://docs.ehrbase.org/docs/category/simplified-data-template-sdt
+- Security / authentication: https://docs.ehrbase.org/docs/EHRbase/Explore/Security
+- Admin API: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+- Status and metrics: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- Enterprise features: https://docs.ehrbase.org/docs/category/enterprise-features
+- The upstream standard: https://specifications.openehr.org/releases/ITS-REST/latest/
+
+## Authentication
+
+Configured by whoever runs the server, not by EHRbase:
+
+- `NONE` — the shipped default, and what the public sandbox runs.
+- `BASIC` — HTTP Basic with one user account and one admin account.
+- `OAUTH` — OAuth2 bearer JWT validated against an external issuer; role read from the
+  `realm_access.roles` and `scope` claims. Role names are configurable.
+
+There is no scope registry. Authorization is role-based: `USER` for the openEHR surface,
+`ADMIN` for `/rest/admin/**` and `/management/**`.
+
+## Things an agent will get wrong if nobody says them
+
+- **Writes are versioned, not mutated.** Every update appends a version. Concurrency is
+  guarded by `If-Match: {version_uid}`; a stale value returns **412**, not 409. Re-read
+  the revision history, rebase, retry. Never retry blind.
+- **There is no Idempotency-Key.** `POST /ehr/{ehr_id}/composition` and
+  `POST /ehr/{ehr_id}/contribution` have no dedupe key — a retried POST after a timeout
+  creates a second version. Read back the contributions before retrying a write.
+  `PUT /ehr/{ehr_id}` (client-supplied EHR id) *is* safe: a duplicate returns **409**.
+- **Errors have no body schema.** The contract declares bare status codes and no
+  `application/problem+json`. Branch on status alone: 400 validation, 401/403 admin
+  gate, 404 missing, 409 already exists, 412 stale precondition, 422 template still in
+  use, 501 not implemented.
+- **`DELETE /rest/admin/ehr/{ehr_id}/contribution/{contribution_id}` returns 501.** It
+  is published but not implemented. Do not call it.
+- **Deleting an EHR is admin-only and permanent.** There is no reversal on the standard
+  surface. Composition deletes are logical (a DELETED version is appended and prior
+  versions stay readable); admin deletes are physical.
+- **Use the flat format if you value your sanity.** `Accept:
+  application/openehr.wt.flat.schema+json` collapses a nested RM composition into a flat
+  path→value map. Fetch the web template first
+  (`/definition/template/adl1.4/{template_id}/webtemplate`) to learn the paths.
+- **`Prefer: return=representation`** echoes the stored object back;
+  `return=minimal` returns headers only.
+- **Supply `openEHR-AUDIT_DETAILS`** on writes — committer, change type, description.
+  It is persisted with the CONTRIBUTION and is the provenance record.
+- **No pagination.** Bound result sets inside the AQL query with `LIMIT`/`OFFSET`.
+
+## SDKs and distribution
+
+Java only. There is no first-party JavaScript, Python, Go, Ruby, PHP or .NET client.
+
+- Java client: `org.ehrbase.openehr.sdk:client` 2.35.0 (2026-08-17)
+- Code generator: `org.ehrbase.openehr.sdk:generator-maven-plugin` 2.35.0
+- Server: `org.ehrbase.openehr:server` 2.35.1 (2026-08-20)
+- Docker: `ehrbase/ehrbase:2.35.1`, with `ehrbase/ehrbase-v2-postgres:16.2`
+- SDK source: https://github.com/ehrbase/openEHR_SDK
+
+## Standards
+
+openEHR ITS-REST 1.0.2 · openEHR RM 1.1.0 · AQL · ADL 1.4 operational templates
+(ADL 2 endpoints exist but are unsupported in the HIP distribution) · IHE ATNA audit
+logging (enterprise) · HL7 FHIR terminology ValueSet validation (as a client).
+
+## Project
+
+- Website: https://ehrbase.org/
+- Source: https://github.com/ehrbase/ehrbase (Apache-2.0)
+- Changelog: https://github.com/ehrbase/ehrbase/blob/develop/CHANGELOG.md
+- Breaking changes: https://github.com/ehrbase/ehrbase/blob/develop/UPDATING.md
+- Security policy: https://github.com/ehrbase/ehrbase/security/policy
+  (report to ehrbase-security@vitagroup.ag)
+- Community: https://discourse.openehr.org/tag/ehrbase
+- Commercial (HIP EHRbase, vitagroup): https://hip.vitagroup.ag/en/
+
+## Not to be confused with
+
+`https://www.ehrbase.org/wp-json/mcp/mcp-oauth-server` is a real, OAuth-protected MCP
+endpoint — but it is the WordPress marketing site's content server. It cannot read or
+write clinical data. There is no MCP server for the openEHR REST API.

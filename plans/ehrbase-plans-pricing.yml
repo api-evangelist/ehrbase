@@ -1,0 +1,55 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  https://www.ehrbase.org/download/, https://www.ehrbase.org/,
+  https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Overview,
+  https://hip.vitagroup.ag/en/, https://github.com/ehrbase/ehrbase/blob/develop/LICENSE
+plan_count: 2
+pricing_page: null
+note: >-
+  EHRbase publishes NO pricing page and no priced tiers. The open-source server is free
+  under Apache-2.0 with no metering, no seats and no quota; the commercial distribution
+  (HIP EHRbase, from vitagroup) is a contact-sales enterprise offering whose price is
+  not published anywhere on ehrbase.org, docs.ehrbase.org or hip.vitagroup.ag. Both
+  tiers are recorded below because "free and unmetered" is a real commercial posture,
+  not an absence of one - but neither carries a published price, so no currency or
+  amount is asserted.
+plans:
+  - id: open-source
+    name: EHRbase (open source)
+    price: 0
+    currency: null
+    billing_period: null
+    license: Apache-2.0
+    quota: unlimited
+    overage: none
+    metering: none
+    detail: >-
+      Self-hosted. No account, no API key, no rate limit, no usage reporting. The full
+      openEHR REST API, Admin API, AQL engine, SDT/web-template projections and the
+      Java SDK are included.
+    obtain:
+      - https://hub.docker.com/r/ehrbase/ehrbase
+      - https://central.sonatype.com/artifact/org.ehrbase.openehr/server
+      - https://github.com/ehrbase/ehrbase
+    support: community - https://discourse.openehr.org/tag/ehrbase and GitHub issues
+  - id: hip-ehrbase
+    name: HIP EHRbase (commercial)
+    vendor: vitagroup AG
+    price: null
+    currency: null
+    billing_period: null
+    pricing_published: false
+    contact: https://hip.vitagroup.ag/en/
+    detail: >-
+      "HIP EHRbase offers additional enterprise capabilities along with professional
+      services and service level agreements."
+    includes:
+      - Yugabyte distributed SQL backend
+      - IHE ATNA audit logging plugin
+      - Event Trigger (HTTP / AMQP / Kafka)
+      - Transaction Compensation (Saga rollback REST API)
+      - Multi-tenancy
+      - Merge EHR
+      - Service level agreements and professional services
+    docs: https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Overview

@@ -1,0 +1,274 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  openapi/_original/ehrbase-api-openapi.json,
+  https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST,
+  https://docs.ehrbase.org/docs/EHRbase/Explore/Security,
+  https://docs.ehrbase.org/docs/EHRbase/Explore/Simplified-data-template/Flat-Reference,
+  https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Transaction-Compensation,
+  https://specifications.openehr.org/releases/ITS-REST/latest/
+note: >-
+  EHRbase inherits nearly all of its cross-cutting semantics from the openEHR
+  ITS-REST specification rather than inventing house conventions. Where a convention
+  below is the standard's, that is said explicitly - an integrator who already speaks
+  openEHR needs no EHRbase-specific connector.
+auth:
+  style: deployment-configured
+  options: [none, http-basic, oauth2-bearer-jwt]
+  default: none
+  detail: See authentication/ehrbase-authentication.yml.
+versioning:
+  api_version_in_path: true
+  pattern: /rest/openehr/v1/**
+  surfaces:
+    - path_prefix: /rest/openehr/v1
+      label: openEHR REST API (standard)
+      standard: openEHR ITS-REST 1.0.2
+    - path_prefix: /rest/ecis/v1
+      label: EHRscape / ECIS API (EHRbase-specific, legacy simplified API)
+    - path_prefix: /rest/admin
+      label: Admin API (unversioned, opt-in, admin role only)
+    - path_prefix: /rest/status
+      label: Status heartbeat (EHRbase-specific)
+    - path_prefix: /management
+      label: Spring Boot Actuator status + metrics (opt-in)
+  product_versioning: >-
+    Semantic versioning on the server itself (2.35.1 as of 2026-08-20), with
+    backwards-incompatible changes documented in UPDATING.md, not in the URL.
+  resource_versioning:
+    style: openEHR two-level versioning
+    detail: >-
+      Every clinical object carries a versioned_object_uid and a version_uid of the
+      form {object_uid}::{creating_system_id}::{version_tree_id}. Writes create a new
+      version rather than mutating; all prior versions stay retrievable.
+    retrieval:
+      - GET /rest/openehr/v1/ehr/{ehr_id}/versioned_composition/{versioned_object_uid}/revision_history
+      - GET /rest/openehr/v1/ehr/{ehr_id}/versioned_composition/{versioned_object_uid}/version/{version_uid}
+      - GET /rest/openehr/v1/ehr/{ehr_id}/versioned_ehr_status/revision_history
+      - GET /rest/openehr/v1/ehr/{ehr_id}/versioned_ehr_status/version/{version_uid}
+concurrency:
+  style: optimistic
+  header: If-Match
+  value: the preceding version_uid
+  applies_to:
+    - updateComposition (PUT /rest/openehr/v1/ehr/{ehr_id}/composition/{versioned_object_uid})
+    - updateEhrStatus (PUT /rest/openehr/v1/ehr/{ehr_id}/ehr_status)
+    - updateDirectory (PUT /rest/openehr/v1/ehr/{ehr_id}/directory)
+    - deleteDirectory (DELETE /rest/openehr/v1/ehr/{ehr_id}/directory)
+  conflict_status: 412
+  detail: >-
+    A stale If-Match returns 412 Precondition Failed, which is the openEHR ITS-REST
+    contract for a lost-update. This is the mechanism an agent must use in place of a
+    retry key.
+idempotency:
+  supported: partial
+  style: >-
+    Natural idempotency through client-supplied identifiers and optimistic
+    concurrency - there is NO Idempotency-Key header anywhere in the contract.
+  mechanisms:
+    - id: client-supplied-ehr-id
+      operation: createEhrWithId
+      method: PUT
+      path: /rest/openehr/v1/ehr/{ehr_id}
+      detail: >-
+        The client chooses the EHR identifier, so a retried create is safely
+        distinguishable. A repeat against an existing EHR returns 409 Conflict rather
+        than creating a duplicate.
+      responses: {created: 201, duplicate: 409, invalid: 400}
+    - id: if-match-precondition
+      applies_to: [updateComposition, updateEhrStatus, updateDirectory, deleteDirectory]
+      detail: >-
+        A replayed update carrying an already-consumed version_uid fails 412 instead
+        of applying twice.
+    - id: idempotent-by-verb
+      detail: >-
+        All 38 GET operations and the PUT stored-query registration
+        (putStoredQuery / putStoredQuery_1) are idempotent by HTTP semantics.
+  gaps:
+    - >-
+      POST createComposition and POST createContribution carry no dedupe key. A
+      retried POST after an ambiguous timeout WILL create a second version/contribution.
+      An agent must read back the EHR's contributions before retrying a write.
+    - No Idempotency-Key or request-id echo header is declared.
+pagination:
+  supported: false
+  detail: >-
+    No limit/offset/cursor/page query parameters are declared on any collection
+    operation. Result sets are bounded inside the AQL query itself (LIMIT / OFFSET),
+    and the AQL configuration docs describe server-side result limits.
+  docs: https://docs.ehrbase.org/docs/EHRbase/Explore/AQL/Configuration
+content_negotiation:
+  request_media_types:
+    - application/json
+    - application/xml
+    - application/openehr.wt.flat.schema+json
+    - application/openehr.wt.structured.schema+json
+    - text/plain
+  response_media_types:
+    - application/json
+    - application/xml
+    - application/openehr.wt.flat.schema+json
+    - application/openehr.wt.structured.schema+json
+    - application/openehr.wt+json
+    - text/plain
+  detail: >-
+    The openehr.wt.* media types select EHRbase's Simplified Data Template (SDT)
+    projections - flat and structured - instead of canonical openEHR JSON/XML. This is
+    the single biggest ergonomics lever in the API: the flat format collapses a deeply
+    nested RM composition into a flat path->value map.
+  docs: https://docs.ehrbase.org/docs/category/simplified-data-template-sdt
+response_shaping:
+  header: Prefer
+  values: [return=representation, return=minimal]
+  applies_to_operations: 10
+  detail: >-
+    Standard openEHR ITS-REST behaviour - return=minimal responds with headers and
+    Location only; return=representation echoes the stored object back.
+audit:
+  header: openEHR-AUDIT_DETAILS
+  applies_to_operations: 10
+  detail: >-
+    Callers supply AUDIT_DETAILS (committer, change type, description) on writes; it
+    is persisted with the CONTRIBUTION. This is the openEHR provenance mechanism.
+  version_header:
+    header: openEHR-VERSION
+    applies_to_operations: 9
+  atna: >-
+    Access logging to an IHE ATNA syslog-over-TLS audit repository is available as an
+    enterprise plugin - see conformance/ehrbase-conformance.yml.
+request_tracing:
+  request_id_header: null
+  detail: >-
+    No X-Request-Id / correlation-id header is declared in the contract. Observability
+    is instead exposed server-side through the Spring Boot Actuator /management
+    surface (health, metrics, prometheus) when enabled.
+  docs: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+error_envelope:
+  format: none-declared
+  detail: >-
+    Error responses in the OpenAPI are declared as status codes with no schema and no
+    problem+json media type. See errors/ehrbase-problem-types.yml for the derived
+    status-code catalog.
+rate_limit_signaling:
+  headers: []
+  detail: >-
+    None. EHRbase is self-hosted; there is no vendor-imposed quota and no
+    X-RateLimit-*/RateLimit-*/Retry-After header in the contract or on live responses
+    from the public sandbox. See rate-limits/ehrbase-rate-limits.yml.
+dry_run_mode:
+  supported: false
+  detail: >-
+    No dry-run/validate-only flag. The closest analogue is that EHRbase validates a
+    composition against its operational template and external terminology on write and
+    rejects with 400/422 before persisting - validation happens, but not without
+    committing on success.
+reversibility:
+  applicable: true
+  grade: documented
+  summary: >-
+    Every write is reversible in the openEHR sense - nothing is destroyed, a new
+    version is appended and the prior version stays addressable - but EHRbase
+    publishes NO time-bounded reversal window, so this grades `documented` rather than
+    `verified`.
+  write_surfaces:
+    - operation: createComposition
+      method: POST
+      path: /rest/openehr/v1/ehr/{ehr_id}/composition
+      reversal:
+        operation: deleteComposition
+        method: DELETE
+        path: /rest/openehr/v1/ehr/{ehr_id}/composition/{preceding_version_uid}
+        semantics: >-
+          Logical delete. openEHR appends a DELETED version to the version tree; the
+          preceding versions remain retrievable through
+          retrieveVersionOfCompositionByVersionUid and the revision history.
+        window_stated: false
+        window_note: >-
+          The docs state no time limit. openEHR's version model retains all prior
+          versions by design, but EHRbase does not publish a reversal window, so none
+          is asserted here.
+      hard_reversal:
+        operation: deleteComposition_1
+        method: DELETE
+        path: /rest/admin/ehr/{ehr_id}/composition/{composition_id}
+        semantics: >-
+          Admin API physical delete - removes the composition and its history. This is
+          NOT reversible and requires the admin role.
+        docs: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+    - operation: updateComposition
+      method: PUT
+      path: /rest/openehr/v1/ehr/{ehr_id}/composition/{versioned_object_uid}
+      reversal:
+        semantics: >-
+          Re-PUT the prior version's content with If-Match set to the current
+          version_uid. The superseded content is always readable at
+          /versioned_composition/{versioned_object_uid}/version/{version_uid}.
+        window_stated: false
+    - operation: createEhr / createEhrWithId
+      method: POST / PUT
+      path: /rest/openehr/v1/ehr[/{ehr_id}]
+      reversal:
+        operation: deleteEhr
+        method: DELETE
+        path: /rest/admin/ehr/{ehr_id}
+        semantics: >-
+          There is NO reversal on the standard openEHR surface - an EHR cannot be
+          deleted through /rest/openehr/v1. Deleting an EHR is an Admin API operation
+          (204) and is physical and permanent.
+        window_stated: false
+        requires_role: admin
+    - operation: createDirectory / updateDirectory
+      method: POST / PUT
+      path: /rest/openehr/v1/ehr/{ehr_id}/directory
+      reversal:
+        operation: deleteDirectory
+        method: DELETE
+        path: /rest/openehr/v1/ehr/{ehr_id}/directory
+        semantics: Versioned delete guarded by If-Match; 412 on a stale precondition.
+        window_stated: false
+    - operation: createContribution
+      method: POST
+      path: /rest/openehr/v1/ehr/{ehr_id}/contribution
+      reversal:
+        semantics: >-
+          Not reversible on the open-source standard surface. The commercial HIP
+          EHRbase distribution adds a Transaction Compensation REST API that rolls a
+          CONTRIBUTION back object-by-object, in inverse order, in one database
+          transaction, per the Saga pattern.
+        docs: https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Transaction-Compensation
+        tier: enterprise
+        window_stated: false
+    - operation: createTemplateClassic
+      method: POST
+      path: /rest/openehr/v1/definition/template/adl1.4
+      reversal:
+        operation: deleteTemplate
+        method: DELETE
+        path: /rest/admin/template/{template_id}
+        semantics: >-
+          Admin-only (202 accepted); 422 if compositions still reference the template.
+          There is also DELETE /rest/admin/template/all.
+        window_stated: false
+        requires_role: admin
+    - operation: putStoredQuery
+      method: PUT
+      path: /rest/openehr/v1/definition/query/{qualified_query_name}[/{version}]
+      reversal:
+        operation: deleteStoredQuery
+        method: DELETE
+        path: /rest/admin/query/{qualified_query_name}/{version}
+        window_stated: false
+        requires_role: admin
+  gaps:
+    - >-
+      Three of the seven reversal paths live on the Admin API, which is disabled by
+      default and gated to the admin role - an ordinary API client cannot undo an EHR
+      creation, a template upload or a stored-query registration at all.
+    - No published reversal window on any operation.
+cross_links:
+  authentication: authentication/ehrbase-authentication.yml
+  errors: errors/ehrbase-problem-types.yml
+  lifecycle: lifecycle/ehrbase-lifecycle.yml
+  rate_limits: rate-limits/ehrbase-rate-limits.yml
+  conformance: conformance/ehrbase-conformance.yml
+  data_model: data-model/ehrbase-data-model.yml

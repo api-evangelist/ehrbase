@@ -1,0 +1,109 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  https://github.com/ehrbase/ehrbase/blob/develop/CHANGELOG.md,
+  https://raw.githubusercontent.com/ehrbase/ehrbase/develop/UPDATING.md,
+  https://github.com/ehrbase/ehrbase/releases,
+  https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics,
+  https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Overview
+versioning:
+  scheme: semver
+  current_version: 2.35.1
+  current_version_released: '2026-08-20'
+  policy_url: https://github.com/ehrbase/ehrbase/blob/develop/CHANGELOG.md
+  policy: >-
+    "The format is based on Keep a Changelog, and this project adheres to Semantic
+    Versioning." Stated at the top of CHANGELOG.md.
+  api_versioning: >-
+    Path-versioned (/rest/openehr/v1) and pinned to the openEHR ITS-REST standard
+    version rather than to EHRbase's own release train - the v1 path has been stable
+    across the whole 0.x -> 2.x server history.
+  cadence_observed:
+    - {version: 2.35.1, date: '2026-08-20'}
+    - {version: 2.35.0, date: '2026-08-17'}
+    - {version: 2.34.0, date: '2026-07-08'}
+    - {version: 2.33.0, date: '2026-06-16'}
+    - {version: 2.32.0, date: '2026-06-09'}
+    - {version: 2.31.0, date: '2026-04-28'}
+    - {version: 2.30.1, date: '2026-04-16'}
+    - {version: 2.30.0, date: '2026-03-24'}
+  cadence_note: 8 releases in the ~5 months to 2026-08-20 - roughly monthly minors with patch releases between.
+deprecation:
+  policy_published: true
+  policy_url: https://github.com/ehrbase/ehrbase/blob/develop/UPDATING.md
+  policy: >-
+    "This file documents any backwards-incompatible changes in EHRbase and assists
+    users migrating to a new version." UPDATING.md is the breaking-change register;
+    CHANGELOG.md carries the Added/Changed/Fixed detail per release.
+  http_signals:
+    sunset_header: false
+    deprecation_header: false
+    detail: >-
+      No RFC 8594 Sunset or Deprecation headers are declared in the contract, and no
+      operation carries deprecated: true in the OpenAPI.
+  deprecated_surfaces:
+    - surface: /rest/ecis/v1/** (EHRscape / ECIS API)
+      status: legacy
+      evidence: >-
+        A pre-standard simplified API kept alongside the openEHR REST API; the
+        published docs cover only the openEHR surface, and the maven module is named
+        rest-ehr-scape.
+    - surface: /rest/openehr/v1/definition/template/adl2
+      status: unsupported-in-distribution
+      evidence: >-
+        "HIP EHRbase supports all endpoints except ADL2 Templates" -
+        https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+    - surface: DELETE /rest/admin/ehr/{ehr_id}/contribution/{contribution_id}
+      status: not-implemented
+      evidence: The operation declares 501 as its only response in the published contract.
+  major_migration:
+    from: 0.x
+    to: 2.x
+    tooling: https://github.com/ehrbase/migration-tool
+    detail: >-
+      "EHRbase 2 comes with a completely overhauled data structure that cannot be
+      automatically migrated by deploying the new version over an older data
+      structure." A dedicated migration tool and a documented procedure are published.
+  archived_components:
+    - {repo: ehrbase/fhir-bridge, archived: true, last_push: '2024-04-08', note: HL7 FHIR to openEHR broker}
+    - {repo: ehrbase/documentation, archived: true, last_push: '2024-04-03', note: superseded by docs.ehrbase.org}
+    - {repo: ehrbase/aql-editor-backend, archived: true, last_push: '2023-08-14'}
+status_page:
+  hosted_status_page: false
+  detail: >-
+    EHRbase is self-hosted software - there is no vendor-run status page, because
+    there is no vendor-run service to report on. What it ships instead is a
+    per-deployment status surface that an operator monitors themselves.
+  self_hosted_status_surfaces:
+    - path: /rest/status
+      operation_id: getEhrbaseStatus
+      auth: open by default
+      returns: ehrbase_version, openehr_sdk_version, archie_version, jvm_version, os_version, postgres_version
+      probed:
+        url: https://sandkiste.ehrbase.org/ehrbase/rest/status
+        status: 200
+        observed: '2026-09-02'
+        sample_version: 2.33.0
+    - path: /rest/admin/status
+      operation_id: getStatus
+      auth: admin role
+    - path: /management/**
+      label: Spring Boot Actuator - health, liveness, readiness, metrics, prometheus
+      auth: admin role by default; configurable admin-only / private / public
+      docs: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+      default_state: disabled
+sla:
+  published: false
+  detail: >-
+    No SLA for the open-source distribution. "HIP EHRbase offers additional enterprise
+    capabilities along with professional services and service level agreements" -
+    https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Overview - so the SLA is
+    a vitagroup commercial artifact, not a published one.
+support:
+  community: https://discourse.openehr.org/tag/ehrbase
+  issues: https://github.com/ehrbase/ehrbase/issues
+  security: mailto:ehrbase-security@vitagroup.ag
+  commercial: https://hip.vitagroup.ag/en/
+license:
+  spdx: Apache-2.0
+  url: https://github.com/ehrbase/ehrbase/blob/develop/LICENSE

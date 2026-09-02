@@ -1,0 +1,73 @@
+generated: '2026-09-02'
+method: derived
+source: >-
+  mcp/ehrbase-mcp.yml, openapi/_original/ehrbase-api-openapi.json,
+  https://www.ehrbase.org/.well-known/oauth-protected-resource
+note: >-
+  This crosswalk exists to record a DIVERGENCE, not an overlap. EHRbase has both a
+  published OpenAPI (63 operations) and a live remote MCP endpoint, and they share
+  nothing: the MCP server is the WordPress Abilities adapter on the marketing site,
+  and the OpenAPI is the openEHR clinical data repository each customer self-hosts.
+  Coverage is genuinely zero. Nothing here is name-matched or semantically guessed.
+surfaces:
+  openapi:
+    file: openapi/_original/ehrbase-api-openapi.json
+    servers: [https://sandkiste.ehrbase.org/ehrbase]
+    operations: 63
+    gated: false
+    note: >-
+      Public sandbox instance runs unauthenticated; production deployments are
+      operator-configured (none / basic / oauth2).
+  mcp:
+    endpoint: https://www.ehrbase.org/wp-json/mcp/mcp-oauth-server
+    gated: true
+    gate: OAuth 2.0 bearer, RFC 9728 challenge, scope "mcp"
+    tools_enumerable: false
+  graphql:
+    endpoint: null
+    note: EHRbase publishes no GraphQL surface. AQL is its query language, exposed over REST.
+crosswalk: []
+mcp_only:
+  - tool: '<not enumerable>'
+    reason: >-
+      tools/list returns 401 without a bearer token. Whatever the WordPress MCP server
+      exposes, it is site-content abilities (wp-abilities/v1) and has no counterpart in
+      the openEHR REST contract.
+rest_only:
+  - group: EHR lifecycle
+    operations: [createEhr, createEhrWithId, getEhrById, getEhrBySubject]
+    reason: no MCP tool exists for the clinical API
+  - group: EHR status
+    operations: [getEhrStatusVersionByTime, getEhrStatusByVersionId, updateEhrStatus, retrieveVersionedEhrStatusByEhr, retrieveVersionedEhrStatusRevisionHistoryByEhr, retrieveVersionOfEhrStatusByTime, retrieveVersionOfEhrStatusByVersionUid]
+    reason: no MCP tool exists for the clinical API
+  - group: Composition
+    operations: [createComposition, updateComposition, deleteComposition, getComposition, retrieveVersionedCompositionByVersionedObjectUid, retrieveVersionedCompositionRevisionHistoryByEhr, retrieveVersionOfCompositionByTime, retrieveVersionOfCompositionByVersionUid]
+    reason: no MCP tool exists for the clinical API
+  - group: Contribution
+    operations: [createContribution, getContribution]
+    reason: no MCP tool exists for the clinical API
+  - group: Directory / Folder
+    operations: [createDirectory, updateDirectory, deleteDirectory, getFolderInDirectory, getFolderInDirectoryVersionAtTime]
+    reason: no MCP tool exists for the clinical API
+  - group: Templates
+    operations: [createTemplateClassic, getTemplateClassic, getTemplatesClassic, getWebTemplate, getTemplateExample, createTemplateNew, getTemplateNew, getTemplatesNew]
+    reason: no MCP tool exists for the clinical API
+  - group: AQL query
+    operations: [executeAdHocQuery, executeAdHocQuery_1, executeStoredQuery, executeStoredQuery_1, executeStoredQuery_2, executeStoredQuery_3, putStoredQuery, putStoredQuery_1, getStoredQueryList, getStoredQueryList_1, getStoredQueryVersion]
+    reason: no MCP tool exists for the clinical API
+  - group: EHRscape / ECIS (legacy)
+    operations: [createComposition_1, getComposition_1, update, delete, getTemplate, getTemplateExample_1]
+    reason: no MCP tool exists for the clinical API
+  - group: Admin API
+    operations: [updateEhr, deleteEhr, deleteComposition_1, deleteDirectory_1, updateContribution, deleteContribution, deleteStoredQuery, deleteTemplate, deleteAllTemplates, updateTemplate, getStatus]
+    reason: no MCP tool exists for the clinical API
+  - group: Status
+    operations: [getEhrbaseStatus]
+    reason: no MCP tool exists for the clinical API
+coverage:
+  mcp_tools_total: null
+  mcp_tools_mapped: 0
+  rest_operations_total: 63
+  rest_operations_mapped: 0
+  rest_operations_unmapped: 63
+  percent_rest_reachable_via_mcp: 0

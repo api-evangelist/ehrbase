@@ -1,0 +1,234 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  openapi/_original/ehrbase-api-openapi.json (info.description),
+  https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST,
+  https://docs.ehrbase.org/docs/EHRbase/Explore/Security,
+  https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Overview,
+  https://docs.ehrbase.org/docs/EHRbase/Explore/Terminology
+note: >-
+  EHRbase's entire product thesis is standards conformance - it is a reference
+  implementation of the openEHR specifications, not a bespoke clinical API. The
+  domain-standard signature below is declared BY THE CONTRACT ITSELF, in
+  info.description of the published OpenAPI, and is corroborated by the resource
+  shape of every path.
+conformance:
+  - id: openehr-its-rest
+    label: openEHR REST API (ITS-REST) 1.0.2
+    domain_standard: true
+    conforms: true
+    version: 1.0.2
+    body: openEHR International
+    evidence:
+      - type: spec-declaration
+        location: openapi/_original/ehrbase-api-openapi.json#/info/description
+        quote: >-
+          "EHRbase implements the [official openEHR REST API]
+          (https://specifications.openehr.org/releases/ITS-REST/latest/)."
+      - type: docs
+        url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+        quote: >-
+          "HIP EHRbase implements version 1.0.2 of the official openEHR REST API...
+          supports all endpoints except ADL2 Templates"
+      - type: path-shape
+        detail: >-
+          All 31 standard operations sit under /rest/openehr/v1/ and follow the
+          ITS-REST resource model exactly - EHR, EHR_STATUS, VERSIONED_EHR_STATUS,
+          COMPOSITION, VERSIONED_COMPOSITION, CONTRIBUTION, DIRECTORY, DEFINITION
+          (template + stored query) and QUERY.
+      - type: header-shape
+        detail: >-
+          The ITS-REST protocol headers are present as declared parameters -
+          openEHR-VERSION (9 operations), openEHR-AUDIT_DETAILS (10 operations),
+          Prefer (10 operations, return=representation|minimal) and
+          If-Match (4 operations, optimistic concurrency on version_uid).
+    gaps:
+      - >-
+        ADL2 template endpoints (/rest/openehr/v1/definition/template/adl2) are
+        present in the contract but documented as unsupported in HIP EHRbase.
+  - id: openehr-rm
+    label: openEHR Reference Model 1.1.0
+    domain_standard: true
+    conforms: true
+    version: 1.1.0
+    body: openEHR International
+    evidence:
+      - type: docs
+        url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+        quote: '"it supports version 1.1.0 of the openEHR Reference Model"'
+      - type: spec-schemas
+        detail: >-
+          components.schemas carries 77 openEHR RM types (COMPOSITION, EHR_STATUS,
+          FOLDER, CONTRIBUTION, DV_* data values, PARTY_PROXY, ARCHETYPED, ...).
+  - id: openehr-aql
+    label: Archetype Query Language (AQL)
+    domain_standard: true
+    conforms: true
+    body: openEHR International
+    evidence:
+      - type: spec-operations
+        detail: >-
+          GET/POST /rest/openehr/v1/query/aql (executeAdHocQuery) plus the stored-query
+          registry under /rest/openehr/v1/definition/query and
+          /rest/openehr/v1/query/{qualified_query_name}[/{version}].
+      - type: docs
+        url: https://docs.ehrbase.org/docs/category/archetype-query-language
+      - type: conformance-suite
+        url: https://github.com/ehrbase/conformance-testing-documentation
+        detail: >-
+          A published AQL conformance test-suite documentation repository
+          (SELECT/WHERE/ORDER_BY/LIMIT/FROM/PARAMETER/AGGREGATE suites).
+  - id: openehr-adl-1.4
+    label: ADL 1.4 operational templates (OPT)
+    domain_standard: true
+    conforms: true
+    body: openEHR International
+    evidence:
+      - type: spec-operations
+        detail: >-
+          /rest/openehr/v1/definition/template/adl1.4 upload + retrieval, plus the
+          EHRbase-specific /webtemplate and /example projections.
+  - id: openehr-adl-2
+    label: ADL 2 templates
+    domain_standard: true
+    conforms: partial
+    body: openEHR International
+    evidence:
+      - type: spec-operations
+        detail: >-
+          /rest/openehr/v1/definition/template/adl2 endpoints exist in the contract.
+      - type: docs
+        url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+        quote: '"supports all endpoints except ADL2 Templates"'
+  - id: ihe-atna
+    label: IHE ATNA (Audit Trail and Node Authentication)
+    domain_standard: true
+    conforms: true
+    tier: enterprise
+    evidence:
+      - type: docs
+        url: https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/ATNA
+        quote: >-
+          "EHRbase provides capabilities to log all accesses to its services based on
+          the ATNA (Audit Trail and Node Authentication) specification." Transport is
+          Syslog over TLS. The docs enumerate the covered operations across
+          Definition, EHR, EHR Status, Composition, Directory, Contribution, Query
+          and Admin.
+    note: Shipped as the ATNA Logging Plugin in HIP EHRbase, the commercial distribution.
+  - id: hl7-fhir-terminology
+    label: HL7 FHIR terminology service (ValueSet validation)
+    domain_standard: true
+    conforms: partial
+    evidence:
+      - type: docs
+        url: https://docs.ehrbase.org/docs/EHRbase/Explore/Terminology
+        detail: >-
+          EHRbase validates coded elements against external FHIR terminology servers
+          using terminology://fhir.hl7.org/ValueSet references in openEHR templates
+          (example given: http://hl7.org/fhir/ValueSet/surface). 2.33.0 added
+          ValueSet-expansion-based validation; 2.32.0 added metrics for the external
+          FHIR terminology HTTP calls.
+    note: >-
+      A FHIR terminology CLIENT, not a FHIR server. The archived ehrbase/fhir-bridge
+      repository was the separate HL7 FHIR facade and is no longer maintained.
+  - id: oauth2
+    label: OAuth 2.0 (RFC 6749) resource server
+    conforms: true
+    evidence:
+      - type: docs
+        url: https://docs.ehrbase.org/docs/EHRbase/Explore/Security
+        detail: >-
+          AUTH_TYPE=OAUTH makes EHRbase a Spring Security OAuth2 resource server
+          validating bearer JWTs against a configured issuer-uri.
+  - id: oidc
+    label: OpenID Connect discovery
+    conforms: partial
+    evidence:
+      - type: docs
+        url: https://docs.ehrbase.org/docs/EHRbase/Explore/Security
+        detail: >-
+          Configured via a JWT issuer-uri (the OIDC discovery root of an external
+          realm, e.g. Keycloak). EHRbase itself publishes no
+          /.well-known/openid-configuration - it is the resource server, not the IdP.
+  - id: rfc9457
+    label: RFC 9457 Problem Details for HTTP APIs
+    conforms: false
+    evidence:
+      - type: spec-content
+        detail: >-
+          No application/problem+json response media type appears anywhere in the
+          published OpenAPI. Error responses are declared as bare status codes with
+          no schema. See errors/ehrbase-problem-types.yml.
+  - id: rfc8414
+    label: RFC 8414 OAuth 2.0 Authorization Server Metadata
+    conforms: true
+    scope: marketing-site-mcp
+    evidence:
+      - type: probe
+        url: https://www.ehrbase.org/.well-known/oauth-authorization-server
+        status: 200
+        detail: Served by the WordPress site for its MCP server, not by the CDR API.
+  - id: rfc9728
+    label: RFC 9728 OAuth 2.0 Protected Resource Metadata
+    conforms: true
+    scope: marketing-site-mcp
+    evidence:
+      - type: probe
+        url: https://www.ehrbase.org/.well-known/oauth-protected-resource
+        status: 200
+        detail: >-
+          Names https://www.ehrbase.org/wp-json/mcp/mcp-oauth-server as the protected
+          resource. The MCP endpoint itself returns
+          WWW-Authenticate: Bearer resource_metadata="..." on an anonymous call, which
+          is exactly the RFC 9728 challenge flow.
+  - id: rfc9116
+    label: RFC 9116 security.txt
+    conforms: false
+    evidence:
+      - type: probe
+        url: https://www.ehrbase.org/.well-known/security.txt
+        status: 404
+      - type: probe
+        url: https://docs.ehrbase.org/.well-known/security.txt
+        status: 404
+    note: >-
+      No security.txt, but a real disclosure policy IS published as SECURITY.md in
+      the GitHub repository. See security/ehrbase-vulnerability-disclosure.yml.
+  - id: pagination
+    label: Standard collection pagination
+    conforms: false
+    evidence:
+      - type: spec-content
+        detail: >-
+          No limit/offset/cursor/page parameters are declared on any collection
+          operation. Result-set bounding is done inside AQL (LIMIT/OFFSET), which is
+          a query-language concern rather than an HTTP pagination convention.
+  - id: idempotency
+    label: Idempotency keys
+    conforms: false
+    evidence:
+      - type: spec-content
+        detail: >-
+          No Idempotency-Key header is declared. Safe repetition is instead achieved
+          through openEHR optimistic concurrency - If-Match on the preceding
+          version_uid - and through PUT /rest/openehr/v1/ehr/{ehr_id}
+          (createEhrWithId), a client-supplied-identifier create that returns 409 on a
+          duplicate. See conventions/ehrbase-conventions.yml.
+  - id: json-api
+    label: JSON:API
+    conforms: false
+    evidence:
+      - type: spec-content
+        detail: >-
+          Media types are application/json, application/xml and the openEHR
+          simplified-data-template types (application/openehr.wt.flat.schema+json,
+          application/openehr.wt.structured.schema+json, application/openehr.wt+json).
+compliance:
+  certifications_published: false
+  note: >-
+    EHRbase publishes no SOC 2 / ISO 27001 / HIPAA / GDPR certification of its own,
+    which is correct for self-hosted open-source software - the certification burden
+    sits with the deployer. What it publishes instead is standards conformance
+    (openEHR ITS-REST 1.0.2, RM 1.1.0, AQL, IHE ATNA) and an Apache-2.0 licence.
+    Commercial compliance and SLAs are offered through vitagroup's HIP EHRbase
+    distribution at https://hip.vitagroup.ag/en/.

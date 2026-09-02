@@ -1,0 +1,50 @@
+generated: '2026-09-02'
+method: probed
+source: >-
+  openapi/_original/ehrbase-api-openapi.json,
+  live response headers from https://sandkiste.ehrbase.org/ehrbase/** on 2026-09-02,
+  https://docs.ehrbase.org/docs/EHRbase/Explore/AQL/Configuration
+limit_count: 0
+note: >-
+  EHRbase publishes no rate limits, and that is the correct answer rather than a gap in
+  our search: it is self-hosted software with no vendor-side metering. There is nobody
+  to enforce a quota. Confirmed three ways - (1) no 429 response is declared on any of
+  the 63 operations in the contract; (2) a live unauthenticated GET against the public
+  sandbox returned 200 with no X-RateLimit-*, RateLimit-* or Retry-After header; (3)
+  the docs describe no throttle. What DOES bound work is a query-level result cap
+  configured by the operator, recorded under resource_limits below.
+limits: []
+response_headers:
+  ratelimit_headers_present: false
+  observed:
+    url: https://sandkiste.ehrbase.org/ehrbase/rest/openehr/v1/definition/template/adl1.4
+    status: 200
+    date: '2026-09-02'
+    headers_seen:
+      - strict-transport-security
+      - x-content-type-options
+      - x-frame-options
+      - cache-control
+      - vary
+      - server (cloudflare)
+    ratelimit_headers_seen: []
+  exhaustion_status: null
+  retry_after: false
+edge:
+  cdn: Cloudflare (in front of the public sandbox only)
+  detail: >-
+    sandkiste.ehrbase.org sits behind Cloudflare, so a bot-management challenge is
+    possible on the sandbox, but that is edge policy on a demo host - not a product
+    rate limit, and it does not apply to a self-hosted deployment.
+resource_limits:
+  - id: aql-result-limits
+    scope: per-query
+    enforced_by: operator configuration
+    detail: >-
+      EHRbase exposes server-side AQL configuration for bounding result sets (default
+      and maximum LIMIT / fetch precedence). These are deployment settings an operator
+      chooses, not a published vendor quota.
+    docs: https://docs.ehrbase.org/docs/EHRbase/Explore/AQL/Configuration
+  - id: template-cache
+    scope: per-deployment
+    detail: Template cache configuration was improved in 2.31.0 (PR #1618).

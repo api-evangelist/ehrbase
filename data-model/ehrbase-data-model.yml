@@ -1,0 +1,172 @@
+generated: '2026-09-02'
+method: derived
+source: >-
+  openapi/_original/ehrbase-api-openapi.json (components.schemas $ref graph + path
+  hierarchy), named against https://specifications.openehr.org/releases/RM/latest/
+note: >-
+  The entity graph below is the openEHR Reference Model 1.1.0, not an EHRbase
+  invention - which is the whole point of the product. The 77 schemas in the published
+  contract are RM types, and the URL hierarchy encodes the containment relationships
+  directly (an EHR contains COMPOSITIONs, a COMPOSITION is addressed under its EHR).
+  Identifiers are openEHR object identifiers, not vendor-prefixed keys.
+identifiers:
+  - id: ehr_id
+    type: HierObjectId (UUID)
+    scope: unique per EHRbase deployment
+    example_shape: 7d44b88c-4199-4bad-97dc-d78268e01398
+  - id: versioned_object_uid
+    type: UUID
+    detail: Stable identity of a clinical object across all of its versions.
+  - id: version_uid
+    type: ObjectVersionId
+    shape: '{versioned_object_uid}::{creating_system_id}::{version_tree_id}'
+    detail: >-
+      The three-part openEHR version identifier. Used as the If-Match value for
+      optimistic concurrency and as the addressable key for any historical version.
+  - id: template_id
+    type: string
+    detail: Human-readable operational template name, e.g. "International Patient Summary v7.1".
+  - id: archetype_id
+    type: ArchetypeID
+    shape: openEHR-EHR-COMPOSITION.<concept>.v<n>
+    example: openEHR-EHR-COMPOSITION.health_summary.v1
+  - id: qualified_query_name
+    type: string
+    shape: '{namespace}::{query_name}'
+    detail: Key of a stored AQL query, optionally with a semver {version}.
+entities:
+  - name: EHR
+    schema: Ehr
+    label: Electronic Health Record - the per-subject container
+    root: true
+    operations: [createEhr, createEhrWithId, getEhrById, getEhrBySubject]
+    path: /rest/openehr/v1/ehr/{ehr_id}
+  - name: EHR_STATUS
+    schema: EhrStatus
+    label: Subject linkage, queryability and modifiability flags for an EHR
+    operations: [getEhrStatusVersionByTime, getEhrStatusByVersionId, updateEhrStatus]
+  - name: VERSIONED_EHR_STATUS
+    schema: VersionedEhrStatus
+    label: Version container for EHR_STATUS
+    operations: [retrieveVersionedEhrStatusByEhr, retrieveVersionedEhrStatusRevisionHistoryByEhr, retrieveVersionOfEhrStatusByTime, retrieveVersionOfEhrStatusByVersionUid]
+  - name: COMPOSITION
+    schema: Composition
+    label: The clinical document - one committed unit of clinical content
+    operations: [createComposition, updateComposition, deleteComposition, getComposition]
+  - name: VERSIONED_COMPOSITION
+    schema: VERSIONED_COMPOSITION
+    label: Version container for a COMPOSITION
+    operations: [retrieveVersionedCompositionByVersionedObjectUid, retrieveVersionedCompositionRevisionHistoryByEhr, retrieveVersionOfCompositionByTime, retrieveVersionOfCompositionByVersionUid]
+  - name: CONTRIBUTION
+    schema: [Contribution, CONTRIBUTION]
+    label: A change-set - the transactional grouping of versions committed together
+    operations: [createContribution, getContribution, updateContribution, deleteContribution]
+  - name: FOLDER / DIRECTORY
+    schema: Folder
+    label: Hierarchical organisation of compositions within an EHR
+    operations: [createDirectory, updateDirectory, deleteDirectory, getFolderInDirectory, getFolderInDirectoryVersionAtTime]
+  - name: OPERATIONAL_TEMPLATE
+    schema: [TemplateResponseData, TemplateMetaDataDto, TemplateId]
+    label: ADL 1.4 / ADL 2 operational template constraining what a composition may contain
+    operations: [createTemplateClassic, getTemplateClassic, getTemplatesClassic, createTemplateNew, getTemplateNew, getTemplatesNew, getTemplateExample]
+  - name: WEB_TEMPLATE
+    schema: [WebTemplate, WebTemplateNode, WebTemplateInput, WebTemplateInputValue, WebTemplateTerminology, WebTemplateValidation, WebTemplateAnnotation, WebtemplateCardinality, WebTemplateInterval]
+    label: EHRbase's flattened, UI-friendly projection of an operational template
+    operations: [getWebTemplate]
+    ehrbase_specific: true
+  - name: STORED_QUERY
+    schema: QueryDefinitionResponseData
+    label: A named, versioned AQL query registered on the server
+    operations: [putStoredQuery, putStoredQuery_1, getStoredQueryList, getStoredQueryList_1, getStoredQueryVersion, deleteStoredQuery]
+  - name: QUERY_RESULT
+    schema: QueryResponseData
+    label: AQL result set (columns + rows)
+    operations: [executeAdHocQuery, executeAdHocQuery_1, executeStoredQuery, executeStoredQuery_1, executeStoredQuery_2, executeStoredQuery_3]
+  - name: AUDIT_DETAILS
+    schema: [AuditDetails, Attestation]
+    label: Who committed what, why - attached to every CONTRIBUTION
+  - name: REVISION_HISTORY
+    schema: [RevisionHistory, RevisionHistoryItem]
+    label: Ordered version history of a versioned object
+  - name: PARTY
+    schema: [PartyProxy, PartyIdentified, PartySelf, PartyRef]
+    label: Subject / committer identity references
+  - name: DATA_VALUE
+    schema: [DvText, DvCodedText, DvDateTime, DvDuration, DvURI, DvEHRURI, DvIdentifier, DvMultimedia, DvEncapsulated, DvIntervalDvDateTime, DvIntervalDvDuration, CodePhrase, TermMapping, TerminologyId]
+    label: openEHR DV_* leaf data types
+relationships:
+  - from: EHR
+    to: EHR_STATUS
+    kind: has_one
+    via: /rest/openehr/v1/ehr/{ehr_id}/ehr_status
+  - from: EHR
+    to: VERSIONED_EHR_STATUS
+    kind: has_one
+    via: /rest/openehr/v1/ehr/{ehr_id}/versioned_ehr_status
+  - from: EHR
+    to: COMPOSITION
+    kind: has_many
+    via: ehr_id path segment
+  - from: EHR
+    to: CONTRIBUTION
+    kind: has_many
+    via: /rest/openehr/v1/ehr/{ehr_id}/contribution
+  - from: EHR
+    to: FOLDER
+    kind: has_one
+    via: /rest/openehr/v1/ehr/{ehr_id}/directory (root folder, itself a tree)
+  - from: FOLDER
+    to: FOLDER
+    kind: has_many
+    via: Folder.folders (self-referential $ref - the directory tree)
+  - from: FOLDER
+    to: COMPOSITION
+    kind: has_many
+    via: Folder.items (ObjectRef to composition version_uid)
+  - from: COMPOSITION
+    to: VERSIONED_COMPOSITION
+    kind: belongs_to
+    via: versioned_object_uid
+  - from: VERSIONED_COMPOSITION
+    to: OriginalVersionComposition
+    kind: has_many
+    via: RevisionHistory / version endpoints
+  - from: CONTRIBUTION
+    to: OriginalVersionRMObject
+    kind: has_many
+    via: Contribution.versions - the change-set members
+  - from: CONTRIBUTION
+    to: AUDIT_DETAILS
+    kind: has_one
+    via: Contribution.audit
+  - from: COMPOSITION
+    to: OPERATIONAL_TEMPLATE
+    kind: belongs_to
+    via: Composition.archetype_details.template_id
+  - from: COMPOSITION
+    to: ARCHETYPE
+    kind: belongs_to
+    via: Composition.archetype_node_id / Archetyped.archetype_id
+  - from: OPERATIONAL_TEMPLATE
+    to: WEB_TEMPLATE
+    kind: has_one
+    via: /definition/template/adl1.4/{template_id}/webtemplate (projection)
+  - from: COMPOSITION
+    to: ContentItem
+    kind: has_many
+    via: Composition.content ($ref, polymorphic RM content tree)
+  - from: EHR_STATUS
+    to: PARTY
+    kind: has_one
+    via: EhrStatus.subject (PartySelf / PartyIdentified)
+  - from: STORED_QUERY
+    to: QUERY_RESULT
+    kind: produces
+    via: /rest/openehr/v1/query/{qualified_query_name}[/{version}]
+containment_summary: >-
+  EHR is the aggregate root. Everything clinical is addressed beneath /ehr/{ehr_id}.
+  COMPOSITIONs are the leaves an application writes, CONTRIBUTIONs are the transactions
+  that group them, FOLDERs organise them, and OPERATIONAL_TEMPLATEs (deployment-scoped,
+  not EHR-scoped) constrain them. AQL queries cut across the whole store rather than
+  traversing the URL hierarchy.
+schemas_total: 77

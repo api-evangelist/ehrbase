@@ -1,18 +1,108 @@
 aid: ehrbase
 name: EHRbase
-description: 'EHRbase is a company surfaced via the API Evangelist harvest backlog (source: openehr-coalition)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  EHRbase is an open source openEHR Clinical Data Repository (CDR) - a standards-based
+  backend for storing, versioning and querying structured clinical data. It implements
+  the official openEHR REST API (ITS-REST 1.0.2) against openEHR Reference Model 1.1.0,
+  is queried with the Archetype Query Language (AQL), and adds Simplified Data Template
+  projections (flat and structured JSON web templates) that make deeply nested openEHR
+  compositions practical to write against. It is Apache-2.0 software each organization
+  self-hosts - no vendor API host, no signup, no metering - maintained by vitagroup AG
+  with the openEHR community, with a commercial distribution (HIP EHRbase) adding
+  multi-tenancy, IHE ATNA audit logging, AQL event triggers, Saga-pattern transaction
+  compensation and SLAs. A public credential-free sandbox at sandkiste.ehrbase.org
+  serves its live OpenAPI 3.1.0 contract of 63 operations.
+image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
 url: https://raw.githubusercontent.com/api-evangelist/ehrbase/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:openehr-coalition
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-09-02'
 modified: '2026-09-02'
 tags:
 - Company
-apis: []
+- Healthcare
+- Health IT
+- Electronic Health Records
+- Clinical Data
+- openEHR
+- Interoperability
+- Open Source
+- Databases
+- Standards
+apis:
+- aid: ehrbase:openehr-rest-api
+  name: EHRbase openEHR REST API
+  description: >-
+    The standard openEHR ITS-REST 1.0.2 surface - 31 paths and 45 operations covering
+    EHR, EHR_STATUS, COMPOSITION, VERSIONED_COMPOSITION, CONTRIBUTION, DIRECTORY,
+    operational templates (ADL 1.4 and ADL 2), stored queries and ad-hoc AQL execution.
+    Writes are versioned rather than mutated, guarded by If-Match on the preceding
+    version_uid, and audited through the openEHR-AUDIT_DETAILS header. EHRbase adds two
+    non-standard but essential projections: the web template (a flattened node tree with
+    aqlPath per leaf) and the flat/structured JSON composition media types.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
+  tags:
+  - openEHR
+  - Electronic Health Records
+  - Clinical Data
+  - AQL
+  - Healthcare
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-openehr-rest-api-openapi.json
+  - type: Overlay
+    url: overlays/ehrbase-openehr-rest-overlay.yaml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+- aid: ehrbase:admin-api
+  name: EHRbase Admin API
+  description: >-
+    The opt-in administrative surface - 8 paths and 11 operations for physical deletion
+    of EHRs, compositions, directories and stored queries, and for replacing or removing
+    operational templates. Disabled by default and gated on the admin role; every
+    operation declares 401 and 403, and template operations return 422 when compositions
+    still reference the template. These changes are irreversible.
+  humanURL: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
+  tags:
+  - Administration
+  - openEHR
+  - Healthcare
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-api-openapi.json
+  - type: Overlay
+    url: overlays/ehrbase-admin-overlay.yaml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+- aid: ehrbase:status-api
+  name: EHRbase Status and Metrics API
+  description: >-
+    A version heartbeat at /rest/status reporting the running EHRbase, openEHR SDK,
+    Archie, JVM, OS and PostgreSQL versions, plus the Spring Boot Actuator surface at
+    /management providing health, liveness, readiness, metrics and Prometheus scrape
+    endpoints. The Actuator surface is disabled by default and its exposure is
+    configurable as admin-only, private or public.
+  humanURL: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
+  tags:
+  - Monitoring
+  - Observability
+  - Operations
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-status-api-openapi.json
+  - type: Overlay
+    url: overlays/ehrbase-status-overlay.yaml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -21,3 +111,76 @@ maintainers:
 common:
 - type: Website
   url: https://ehrbase.org/
+- type: DeveloperPortal
+  url: https://docs.ehrbase.org/
+- type: Documentation
+  url: https://docs.ehrbase.org/
+- type: APIReference
+  url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+- type: GettingStarted
+  url: https://docs.ehrbase.org/docs/EHRbase/Installation
+- type: Support
+  url: https://discourse.openehr.org/tag/ehrbase
+- type: Blog
+  url: https://www.ehrbase.org/feed/
+- type: GitHubOrganization
+  url: https://github.com/ehrbase
+- type: SourceCode
+  url: https://github.com/ehrbase/ehrbase
+- type: PrivacyPolicy
+  url: https://www.ehrbase.org/privacy-policy/
+- type: License
+  url: https://github.com/ehrbase/ehrbase/blob/develop/LICENSE
+- type: ChangeLog
+  url: changelog/ehrbase-changelog.yml
+- type: Lifecycle
+  url: lifecycle/ehrbase-lifecycle.yml
+- type: Deprecation
+  url: lifecycle/ehrbase-lifecycle.yml
+- type: Authentication
+  url: authentication/ehrbase-authentication.yml
+- type: Conventions
+  url: conventions/ehrbase-conventions.yml
+- type: Idempotency
+  url: conventions/ehrbase-conventions.yml
+- type: ErrorCatalog
+  url: errors/ehrbase-problem-types.yml
+- type: DataModel
+  url: data-model/ehrbase-data-model.yml
+- type: Conformance
+  url: conformance/ehrbase-conformance.yml
+- type: Packages
+  url: packages/ehrbase-packages.yml
+- type: SDKs
+  url: packages/ehrbase-packages.yml
+- type: CLI
+  url: cli/ehrbase-cli.yml
+- type: Sandbox
+  url: sandbox/ehrbase-sandbox.yml
+- type: Plans
+  url: plans/ehrbase-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/ehrbase-rate-limits.yml
+- type: LLMsTxt
+  url: llms/ehrbase-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+- type: WellKnown
+  url: well-known/ehrbase-well-known.yml
+- type: MCPServer
+  url: mcp/ehrbase-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/ehrbase-tool-crosswalk.yml
+- type: Webhooks
+  url: asyncapi/ehrbase-event-trigger-webhooks.yml
+- type: DomainSecurity
+  url: security/ehrbase-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/ehrbase-vulnerability-disclosure.yml
+- type: Security
+  url: security/ehrbase-vulnerability-disclosure.yml
+x-enrichment:
+  date: '2026-09-02'
+  status: enriched
+  artifacts_added: 24
+  pass: local-v1

@@ -1,0 +1,188 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  https://repo1.maven.org/maven2/org/ehrbase/ (maven-metadata.xml per artifact),
+  https://hub.docker.com/v2/repositories/ehrbase/, https://github.com/ehrbase
+note: >-
+  EHRbase is a self-hosted, Apache-2.0 openEHR clinical data repository. Its
+  distribution surface is Maven Central (server modules + the openEHR_SDK Java
+  client) and Docker Hub (the runnable server image), not a language-SDK matrix -
+  there are no first-party JavaScript, Python, Go, Ruby, PHP or .NET clients. All
+  versions and dates below were read from the registry metadata endpoints on
+  2026-09-02. Currency is healthy: the newest Maven Central release (2.35.1,
+  2026-08-20) matches the newest GitHub release tag, and the Docker image tracks it.
+  The two dated laggards - ehrbase-v2-postgres 16.2 (2024-04-08) and migration-tool
+  1.2.0 (2024-06-10) - are pinned companion images, not abandoned clients.
+registries_checked:
+  - registry: maven
+    result: 40+ artifacts under org.ehrbase.openehr and org.ehrbase.openehr.sdk
+  - registry: docker
+    result: 4 repositories under the ehrbase Docker Hub namespace
+  - registry: npm
+    result: no first-party @ehrbase / ehrbase package published
+  - registry: pypi
+    result: no first-party ehrbase package published
+  - registry: nuget
+    result: not published
+  - registry: rubygems
+    result: not published
+  - registry: crates.io
+    result: not published
+  - registry: packagist
+    result: not published
+  - registry: pkg.go.dev
+    result: not published
+packages:
+  - name: org.ehrbase.openehr:server
+    registry: maven
+    official: true
+    kind: server
+    language: java
+    version: 2.35.1
+    published: '2026-08-20'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr/server
+    source: https://github.com/ehrbase/ehrbase
+    license: Apache-2.0
+    note: The EHRbase openEHR server aggregate module.
+  - name: org.ehrbase.openehr:application
+    registry: maven
+    official: true
+    kind: server
+    language: java
+    version: 2.35.1
+    published: '2026-08-20'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr/application
+    source: https://github.com/ehrbase/ehrbase
+    license: Apache-2.0
+    note: Runnable Spring Boot application module.
+  - name: org.ehrbase.openehr:bom
+    registry: maven
+    official: true
+    kind: bom
+    language: java
+    version: 2.35.1
+    published: '2026-08-20'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr/bom
+    source: https://github.com/ehrbase/ehrbase
+    license: Apache-2.0
+  - name: org.ehrbase.openehr:api
+    registry: maven
+    official: true
+    kind: library
+    language: java
+    version: 2.35.1
+    published: '2026-08-20'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr/api
+    source: https://github.com/ehrbase/ehrbase
+    license: Apache-2.0
+  - name: org.ehrbase.openehr:plugin
+    registry: maven
+    official: true
+    kind: extension-point
+    language: java
+    version: 2.35.1
+    published: '2026-08-20'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr/plugin
+    source: https://github.com/ehrbase/ehrbase
+    license: Apache-2.0
+    note: Plugin SPI for extending an EHRbase deployment; see ehrbase/ExamplePlugin.
+  - name: org.ehrbase.openehr.sdk:client
+    registry: maven
+    official: true
+    kind: sdk
+    language: java
+    version: 2.35.0
+    published: '2026-08-17'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr.sdk/client
+    source: https://github.com/ehrbase/openEHR_SDK
+    note: >-
+      The first-party Java client for the openEHR REST API - the SDK an integrator
+      actually calls EHRbase with.
+  - name: org.ehrbase.openehr.sdk:bom
+    registry: maven
+    official: true
+    kind: bom
+    language: java
+    version: 2.35.0
+    published: '2026-08-17'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr.sdk/bom
+    source: https://github.com/ehrbase/openEHR_SDK
+  - name: org.ehrbase.openehr.sdk:generator-maven-plugin
+    registry: maven
+    official: true
+    kind: codegen
+    language: java
+    version: 2.35.0
+    published: '2026-08-17'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr.sdk/generator-maven-plugin
+    source: https://github.com/ehrbase/openEHR_SDK
+    note: Generates typed Java classes from openEHR operational templates.
+  - name: org.ehrbase.openehr.sdk:web-template
+    registry: maven
+    official: true
+    kind: library
+    language: java
+    version: 2.35.0
+    published: '2026-08-17'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr.sdk/web-template
+    source: https://github.com/ehrbase/openEHR_SDK
+  - name: org.ehrbase.openehr.sdk:aql
+    registry: maven
+    official: true
+    kind: library
+    language: java
+    version: 2.35.0
+    published: '2026-08-17'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr.sdk/aql
+    source: https://github.com/ehrbase/openEHR_SDK
+    note: Archetype Query Language parser and model.
+  - name: org.ehrbase.openehr.sdk:validation
+    registry: maven
+    official: true
+    kind: library
+    language: java
+    version: 2.35.0
+    published: '2026-08-17'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr.sdk/validation
+    source: https://github.com/ehrbase/openEHR_SDK
+  - name: org.ehrbase.openehr.sdk:serialisation
+    registry: maven
+    official: true
+    kind: library
+    language: java
+    version: 2.35.0
+    published: '2026-08-17'
+    url: https://central.sonatype.com/artifact/org.ehrbase.openehr.sdk/serialisation
+    source: https://github.com/ehrbase/openEHR_SDK
+  - name: ehrbase/ehrbase
+    registry: docker
+    official: true
+    kind: container
+    version: 2.35.1
+    published: '2026-08-20'
+    url: https://hub.docker.com/r/ehrbase/ehrbase
+    source: https://github.com/ehrbase/ehrbase
+    note: >-
+      The runnable server image; 523,575 pulls as of 2026-09-02. A `next` tag is
+      rebuilt continuously (2026-09-02) alongside the pinned release tags.
+  - name: ehrbase/ehrbase-v2-postgres
+    registry: docker
+    official: true
+    kind: container
+    version: '16.2'
+    published: '2024-04-08'
+    url: https://hub.docker.com/r/ehrbase/ehrbase-v2-postgres
+    note: >-
+      Preconfigured PostgreSQL 16.2 image referenced by the official install guide.
+      Single tag, last pushed 2024-04-08 - pinned companion image, not a client SDK.
+  - name: ehrbase/migration-tool
+    registry: docker
+    official: true
+    kind: container
+    version: 1.2.0
+    published: '2024-06-10'
+    url: https://hub.docker.com/r/ehrbase/migration-tool
+    source: https://github.com/ehrbase/migration-tool
+    note: >-
+      One-shot 0.x to 2.x data migration tool. Last released 2024-06-10, which is
+      expected for a tool that only has to cover one historical upgrade path.
