@@ -182,5 +182,5 @@ common:
 x-enrichment:
   date: '2026-09-02'
   status: enriched
-  artifacts_added: 24
+  artifacts_added: 33
   pass: local-v1
