@@ -1,0 +1,14 @@
+{
+  "repo": "ehrbase",
+  "feeds": [
+    {
+      "source": "https://discourse.openehr.org/tag/ehrbase",
+      "feed_url": "https://discourse.openehr.org/posts.rss",
+      "title": "",
+      "saved": 21,
+      "method": "discovered"
+    }
+  ],
+  "post_count": 21,
+  "fetched": "2026-09-06T19:17:18Z"
+}
