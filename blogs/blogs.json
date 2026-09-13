@@ -5,10 +5,17 @@
       "source": "https://discourse.openehr.org/tag/ehrbase",
       "feed_url": "https://discourse.openehr.org/posts.rss",
       "title": "",
-      "saved": 21,
+      "saved": 0,
       "method": "discovered"
+    },
+    {
+      "source": "https://discourse.openehr.org/posts.rss",
+      "feed_url": "https://discourse.openehr.org/posts.rss",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
     }
   ],
-  "post_count": 21,
-  "fetched": "2026-09-06T19:17:18Z"
+  "post_count": 31,
+  "fetched": "2026-09-13T13:00:00Z"
 }
