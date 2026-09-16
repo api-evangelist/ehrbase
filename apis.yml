@@ -27,80 +27,379 @@ tags:
 - Clinical Data
 - openEHR
 - Interoperability
+- Open-Source
+- Databases
+- Standards
+tags_raw:
+- Company
+- Healthcare
+- Health IT
+- Electronic Health Records
+- Clinical Data
+- openEHR
+- Interoperability
 - Open Source
 - Databases
 - Standards
 apis:
-- aid: ehrbase:openehr-rest-api
-  name: EHRbase openEHR REST API
-  description: >-
-    The standard openEHR ITS-REST 1.0.2 surface - 31 paths and 45 operations covering
-    EHR, EHR_STATUS, COMPOSITION, VERSIONED_COMPOSITION, CONTRIBUTION, DIRECTORY,
-    operational templates (ADL 1.4 and ADL 2), stored queries and ad-hoc AQL execution.
-    Writes are versioned rather than mutated, guarded by If-Match on the preceding
-    version_uid, and audited through the openEHR-AUDIT_DETAILS header. EHRbase adds two
-    non-standard but essential projections: the web template (a flattened node tree with
-    aqlPath per leaf) and the flat/structured JSON composition media types.
+- aid: ehrbase:ehrbase-adl-1-4-template-api
+  name: EHRbase ADL 1.4 TEMPLATE API
+  description: The ADL 1.4 TEMPLATE API from EHRbase — 3 operation(s) for adl 1.4 template.
   humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
   baseURL: https://sandkiste.ehrbase.org/ehrbase
-  image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
   tags:
-  - openEHR
-  - Electronic Health Records
-  - Clinical Data
-  - AQL
-  - Healthcare
+  - ADL 1.4 TEMPLATE
   properties:
   - type: OpenAPI
-    url: openapi/ehrbase-openehr-rest-api-openapi.json
-  - type: Overlay
-    url: overlays/ehrbase-openehr-rest-overlay.yaml
+    url: openapi/ehrbase-adl-1-4-template-api-openapi.yml
   - type: Documentation
     url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
   - type: APIReference
     url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
-- aid: ehrbase:admin-api
-  name: EHRbase Admin API
-  description: >-
-    The opt-in administrative surface - 8 paths and 11 operations for physical deletion
-    of EHRs, compositions, directories and stored queries, and for replacing or removing
-    operational templates. Disabled by default and gated on the admin role; every
-    operation declares 401 and 403, and template operations return 422 when compositions
-    still reference the template. These changes are irreversible.
-  humanURL: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
-  baseURL: https://sandkiste.ehrbase.org/ehrbase
-  image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
-  tags:
-  - Administration
-  - openEHR
-  - Healthcare
-  properties:
-  - type: OpenAPI
-    url: openapi/ehrbase-admin-api-openapi.json
-  - type: Overlay
-    url: overlays/ehrbase-admin-overlay.yaml
   - type: Documentation
     url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
-- aid: ehrbase:status-api
-  name: EHRbase Status and Metrics API
-  description: >-
-    A version heartbeat at /rest/status reporting the running EHRbase, openEHR SDK,
-    Archie, JVM, OS and PostgreSQL versions, plus the Spring Boot Actuator surface at
-    /management providing health, liveness, readiness, metrics and Prometheus scrape
-    endpoints. The Actuator surface is disabled by default and its exposure is
-    configurable as admin-only, private or public.
-  humanURL: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-adl-2-template-api
+  name: EHRbase ADL 2 TEMPLATE API
+  description: The ADL 2 TEMPLATE API from EHRbase — 2 operation(s) for adl 2 template.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
   baseURL: https://sandkiste.ehrbase.org/ehrbase
-  image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
   tags:
-  - Monitoring
-  - Observability
-  - Operations
+  - ADL 2 TEMPLATE
   properties:
   - type: OpenAPI
-    url: openapi/ehrbase-status-api-openapi.json
-  - type: Overlay
-    url: overlays/ehrbase-status-overlay.yaml
+    url: openapi/ehrbase-adl-2-template-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-admin-composition-api
+  name: EHRbase Admin - Composition API
+  description: The Admin - Composition API from EHRbase — 1 operation(s) for admin - composition.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Admin - Composition
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-composition-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-admin-contribution-api
+  name: EHRbase Admin - Contribution API
+  description: The Admin - Contribution API from EHRbase — 1 operation(s) for admin - contribution.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Admin - Contribution
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-contribution-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-admin-directory-api
+  name: EHRbase Admin - Directory API
+  description: The Admin - Directory API from EHRbase — 1 operation(s) for admin - directory.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Admin - Directory
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-directory-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-admin-ehr-api
+  name: EHRbase Admin - EHR API
+  description: The Admin - EHR API from EHRbase — 1 operation(s) for admin - ehr.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Admin - EHR
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-ehr-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-admin-heartbeat-api
+  name: EHRbase Admin - Heartbeat API
+  description: The Admin - Heartbeat API from EHRbase — 1 operation(s) for admin - heartbeat.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Admin - Heartbeat
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-heartbeat-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-admin-stored-query-api
+  name: EHRbase Admin - Stored-Query API
+  description: The Admin - Stored-Query API from EHRbase — 1 operation(s) for admin - stored-query.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Admin - Stored-Query
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-stored-query-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-admin-template-api
+  name: EHRbase Admin - Template API
+  description: The Admin - Template API from EHRbase — 2 operation(s) for admin - template.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Admin - Template
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-admin-template-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-composition-api
+  name: EHRbase COMPOSITION API
+  description: The COMPOSITION API from EHRbase — 5 operation(s) for composition.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - COMPOSITION
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-composition-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-contribution-api
+  name: EHRbase CONTRIBUTION API
+  description: The CONTRIBUTION API from EHRbase — 2 operation(s) for contribution.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - CONTRIBUTION
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-contribution-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-directory-api
+  name: EHRbase DIRECTORY API
+  description: The DIRECTORY API from EHRbase — 2 operation(s) for directory.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - DIRECTORY
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-directory-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-ehr-api
+  name: EHRbase EHR API
+  description: The EHR API from EHRbase — 2 operation(s) for ehr.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - EHR
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-ehr-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-ehr-status-api
+  name: EHRbase EHR STATUS API
+  description: The EHR_STATUS API from EHRbase — 2 operation(s) for ehr_status.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - EHR_STATUS
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-ehr-status-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-query-api
+  name: EHRbase QUERY API
+  description: The QUERY API from EHRbase — 3 operation(s) for query.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - QUERY
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-query-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-status-api
+  name: EHRbase Status API
+  description: Heartbeat, Version info, Status
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - Status
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-status-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-stored-query-api
+  name: EHRbase STORED QUERY API
+  description: The STORED_QUERY API from EHRbase — 3 operation(s) for stored_query.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - STORED_QUERY
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-stored-query-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-template-api
+  name: EHRbase TEMPLATE API
+  description: The TEMPLATE API from EHRbase — 3 operation(s) for template.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - TEMPLATE
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-template-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-versioned-composition-api
+  name: EHRbase VERSIONED COMPOSITION API
+  description: The VERSIONED_COMPOSITION API from EHRbase — 4 operation(s) for versioned_composition.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - VERSIONED_COMPOSITION
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-versioned-composition-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
+- aid: ehrbase:ehrbase-versioned-ehr-status-api
+  name: EHRbase VERSIONED EHR STATUS API
+  description: The VERSIONED_EHR_STATUS API from EHRbase — 4 operation(s) for versioned_ehr_status.
+  humanURL: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  baseURL: https://sandkiste.ehrbase.org/ehrbase
+  tags:
+  - VERSIONED_EHR_STATUS
+  properties:
+  - type: OpenAPI
+    url: openapi/ehrbase-versioned-ehr-status-api-openapi.yml
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/openEHR-REST
+  - type: APIReference
+    url: https://docs.ehrbase.org/api/hip-ehrbase/openehr
+  - type: Documentation
+    url: https://docs.ehrbase.org/docs/EHRbase/Explore/Admin-REST
   - type: Documentation
     url: https://docs.ehrbase.org/docs/EHRbase/Explore/Status-And-Metrics
 maintainers:
@@ -109,6 +408,12 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/ehrbase-openehr-rest-overlay.yaml
+- type: Overlay
+  url: overlays/ehrbase-admin-overlay.yaml
+- type: Overlay
+  url: overlays/ehrbase-status-overlay.yaml
 - type: Website
   url: https://ehrbase.org/
 - type: DeveloperPortal
