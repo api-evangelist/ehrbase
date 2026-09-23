@@ -1,0 +1,63 @@
+openapi: 3.2.0
+info:
+  title: EHRbase Admin - Heartbeat API
+  description: 'EHRbase implements the official openEHR REST API. Additionally, EHRbase provides a custom `status` heartbeat endpoint, an Admin API (if activated) and a Status and Metrics API (if activated) for monitoring and maintenance. Note: The openEHR REST API is documented in their official documentation, not here. Please refer to their separate documentation.'
+  license:
+    name: Apache 2.0
+    url: https://github.com/ehrbase/ehrbase/blob/develop/LICENSE.md
+  version: v1
+servers:
+- url: https://sandkiste.ehrbase.org/ehrbase
+  description: Generated server url
+tags:
+- name: Admin - Heartbeat
+paths:
+  /rest/admin/status:
+    get:
+      tags:
+      - Admin - Heartbeat
+      operationId: getStatus
+      responses:
+        '200':
+          description: Admin API resources available and user has permission to access.
+          headers:
+            Content-Type:
+              description: Format of response
+              style: simple
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStatusResponseData'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AdminStatusResponseData'
+        '401':
+          description: Client credentials are invalid or have expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStatusResponseData'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AdminStatusResponseData'
+        '403':
+          description: Client has no access permission since the admin role is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminStatusResponseData'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AdminStatusResponseData'
+      summary: Get status
+      x-summary-source: derived
+components:
+  schemas:
+    AdminStatusResponseData:
+      type: object
+      properties:
+        message:
+          type: string
+externalDocs:
+  description: EHRbase Documentation
+  url: https://docs.ehrbase.org/
