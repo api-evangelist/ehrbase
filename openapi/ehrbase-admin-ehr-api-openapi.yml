@@ -125,16 +125,16 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    AdminDeleteResponseData:
-      type: object
-      properties:
-        deleted:
-          type: integer
-          format: int32
     AdminUpdateResponseData:
       type: object
       properties:
         updated:
+          type: integer
+          format: int32
+    AdminDeleteResponseData:
+      type: object
+      properties:
+        deleted:
           type: integer
           format: int32
 externalDocs:

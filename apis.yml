@@ -12,6 +12,24 @@ description: >-
   multi-tenancy, IHE ATNA audit logging, AQL event triggers, Saga-pattern transaction
   compensation and SLAs. A public credential-free sandbox at sandkiste.ehrbase.org
   serves its live OpenAPI 3.1.0 contract of 63 operations.
+deliveryModel:
+  model: open-core
+  license: Apache-2.0
+  license_evidence:
+    repo: ehrbase/ehrbase
+    spdx: Apache-2.0
+    stars: 384
+  open_source: true
+  commercial: true
+  callable_host: true
+  label: Open core · an OSS project plus a commercial hosted product
+  confidence: medium
+  source:
+  - openapi
+  - pricing
+  - repository-license
+  generated: '2026-09-25'
+  method: derived
 image: https://raw.githubusercontent.com/ehrbase/ehrbase/develop/ehrbase.png
 url: https://raw.githubusercontent.com/api-evangelist/ehrbase/refs/heads/main/apis.yml
 x-type: company
@@ -27,7 +45,7 @@ tags:
 - Clinical Data
 - openEHR
 - Interoperability
-- Open-Source
+- Open Source
 - Database
 - Standards
 tags_raw:
@@ -41,6 +59,7 @@ tags_raw:
 - Open Source
 - Databases
 - Standards
+- Open-Source
 apis:
 - aid: ehrbase:ehrbase-adl-1-4-template-api
   name: EHRbase ADL 1.4 TEMPLATE API

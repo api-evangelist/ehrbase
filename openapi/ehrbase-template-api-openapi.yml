@@ -105,6 +105,22 @@ paths:
       deprecated: true
 components:
   schemas:
+    WebTemplateTerminology:
+      type: object
+      properties:
+        value:
+          type: string
+        terminologyId:
+          type: string
+    WebTemplateValidation:
+      type: object
+      properties:
+        precision:
+          $ref: '#/components/schemas/WebTemplateInterval'
+        range:
+          $ref: '#/components/schemas/WebTemplateInterval'
+        pattern:
+          type: string
     WebTemplateInterval:
       type: object
       properties:
@@ -143,66 +159,21 @@ components:
           type: string
         defaultValue:
           type: string
-    WebTemplateAnnotation:
+    WebtemplateCardinality:
       type: object
       properties:
-        comment:
-          type: string
-        other:
-          type: object
-          additionalProperties:
-            type: string
-    TemplateResponseData: {}
-    WebTemplateInputValue:
-      type: object
-      properties:
-        value:
-          type: string
-        label:
-          type: string
-        localizedLabels:
-          type: object
-          additionalProperties:
-            type: string
-        localizedDescriptions:
-          type: object
-          additionalProperties:
-            type: string
-        termBindings:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/WebTemplateTerminology'
-        ordinal:
+        min:
           type: integer
           format: int32
-        currentStates:
+        max:
+          type: integer
+          format: int32
+        ids:
           type: array
           items:
             type: string
-        validation:
-          $ref: '#/components/schemas/WebTemplateValidation'
-    WebTemplate:
-      type: object
-      properties:
-        templateId:
-          type: string
-        version:
-          type: string
-        defaultLanguage:
-          type: string
-        languages:
-          type: array
-          items:
-            type: string
-        tree:
-          $ref: '#/components/schemas/WebTemplateNode'
-    WebTemplateTerminology:
-      type: object
-      properties:
-        value:
-          type: string
-        terminologyId:
-          type: string
+        excludeFromWebTemplate:
+          type: boolean
     WebTemplateNode:
       type: object
       properties:
@@ -266,30 +237,59 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WebtemplateCardinality'
-    WebtemplateCardinality:
+    WebTemplate:
       type: object
       properties:
-        min:
-          type: integer
-          format: int32
-        max:
-          type: integer
-          format: int32
-        ids:
+        templateId:
+          type: string
+        version:
+          type: string
+        defaultLanguage:
+          type: string
+        languages:
           type: array
           items:
             type: string
-        excludeFromWebTemplate:
-          type: boolean
-    WebTemplateValidation:
+        tree:
+          $ref: '#/components/schemas/WebTemplateNode'
+    WebTemplateInputValue:
       type: object
       properties:
-        precision:
-          $ref: '#/components/schemas/WebTemplateInterval'
-        range:
-          $ref: '#/components/schemas/WebTemplateInterval'
-        pattern:
+        value:
           type: string
+        label:
+          type: string
+        localizedLabels:
+          type: object
+          additionalProperties:
+            type: string
+        localizedDescriptions:
+          type: object
+          additionalProperties:
+            type: string
+        termBindings:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/WebTemplateTerminology'
+        ordinal:
+          type: integer
+          format: int32
+        currentStates:
+          type: array
+          items:
+            type: string
+        validation:
+          $ref: '#/components/schemas/WebTemplateValidation'
+    TemplateResponseData: {}
+    WebTemplateAnnotation:
+      type: object
+      properties:
+        comment:
+          type: string
+        other:
+          type: object
+          additionalProperties:
+            type: string
 externalDocs:
   description: EHRbase Documentation
   url: https://docs.ehrbase.org/

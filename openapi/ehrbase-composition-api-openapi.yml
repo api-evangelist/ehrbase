@@ -455,53 +455,6 @@ paths:
                 type: string
 components:
   schemas:
-    StructuredString:
-      type: object
-      properties:
-        format:
-          type: string
-          enum:
-          - XML
-          - JSON
-        value:
-          type: string
-    CompositionWriteRestResponseData:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/Meta'
-        action:
-          type: string
-          enum:
-          - RETRIEVE
-          - CREATE
-          - UPDATE
-          - MERGE
-          - DELETE
-        compositionUid:
-          type: string
-    ActionRestResponseData:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/Meta'
-        action:
-          type: string
-          enum:
-          - RETRIEVE
-          - CREATE
-          - UPDATE
-          - MERGE
-          - DELETE
-    Meta:
-      type: object
-      properties:
-        href:
-          $ref: '#/components/schemas/RestHref'
-        precedingHref:
-          $ref: '#/components/schemas/RestHref'
-        nextHref:
-          $ref: '#/components/schemas/RestHref'
     CompositionResponseData:
       type: object
       properties:
@@ -534,10 +487,57 @@ components:
           format: uuid
         compositionUid:
           type: string
+    ActionRestResponseData:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        action:
+          type: string
+          enum:
+          - RETRIEVE
+          - CREATE
+          - UPDATE
+          - MERGE
+          - DELETE
     RestHref:
       type: object
       properties:
         url:
+          type: string
+    CompositionWriteRestResponseData:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        action:
+          type: string
+          enum:
+          - RETRIEVE
+          - CREATE
+          - UPDATE
+          - MERGE
+          - DELETE
+        compositionUid:
+          type: string
+    Meta:
+      type: object
+      properties:
+        href:
+          $ref: '#/components/schemas/RestHref'
+        precedingHref:
+          $ref: '#/components/schemas/RestHref'
+        nextHref:
+          $ref: '#/components/schemas/RestHref'
+    StructuredString:
+      type: object
+      properties:
+        format:
+          type: string
+          enum:
+          - XML
+          - JSON
+        value:
           type: string
 externalDocs:
   description: EHRbase Documentation
