@@ -105,60 +105,6 @@ paths:
       deprecated: true
 components:
   schemas:
-    WebTemplateTerminology:
-      type: object
-      properties:
-        value:
-          type: string
-        terminologyId:
-          type: string
-    WebTemplateValidation:
-      type: object
-      properties:
-        precision:
-          $ref: '#/components/schemas/WebTemplateInterval'
-        range:
-          $ref: '#/components/schemas/WebTemplateInterval'
-        pattern:
-          type: string
-    WebTemplateInterval:
-      type: object
-      properties:
-        min: {}
-        minOp:
-          type: string
-          enum:
-          - '>='
-          - '>'
-          - <=
-          - <
-        max: {}
-        maxOp:
-          type: string
-          enum:
-          - '>='
-          - '>'
-          - <=
-          - <
-    WebTemplateInput:
-      type: object
-      properties:
-        suffix:
-          type: string
-        type:
-          type: string
-        list:
-          type: array
-          items:
-            $ref: '#/components/schemas/WebTemplateInputValue'
-        listOpen:
-          type: boolean
-        validation:
-          $ref: '#/components/schemas/WebTemplateValidation'
-        terminology:
-          type: string
-        defaultValue:
-          type: string
     WebtemplateCardinality:
       type: object
       properties:
@@ -174,6 +120,47 @@ components:
             type: string
         excludeFromWebTemplate:
           type: boolean
+    WebTemplateValidation:
+      type: object
+      properties:
+        precision:
+          $ref: '#/components/schemas/WebTemplateInterval'
+        range:
+          $ref: '#/components/schemas/WebTemplateInterval'
+        pattern:
+          type: string
+    WebTemplateAnnotation:
+      type: object
+      properties:
+        comment:
+          type: string
+        other:
+          type: object
+          additionalProperties:
+            type: string
+    TemplateResponseData: {}
+    WebTemplate:
+      type: object
+      properties:
+        templateId:
+          type: string
+        version:
+          type: string
+        defaultLanguage:
+          type: string
+        languages:
+          type: array
+          items:
+            type: string
+        tree:
+          $ref: '#/components/schemas/WebTemplateNode'
+    WebTemplateTerminology:
+      type: object
+      properties:
+        value:
+          type: string
+        terminologyId:
+          type: string
     WebTemplateNode:
       type: object
       properties:
@@ -237,21 +224,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WebtemplateCardinality'
-    WebTemplate:
+    WebTemplateInterval:
       type: object
       properties:
-        templateId:
+        min: {}
+        minOp:
           type: string
-        version:
+          enum:
+          - '>='
+          - '>'
+          - <=
+          - <
+        max: {}
+        maxOp:
           type: string
-        defaultLanguage:
-          type: string
-        languages:
-          type: array
-          items:
-            type: string
-        tree:
-          $ref: '#/components/schemas/WebTemplateNode'
+          enum:
+          - '>='
+          - '>'
+          - <=
+          - <
     WebTemplateInputValue:
       type: object
       properties:
@@ -280,16 +271,25 @@ components:
             type: string
         validation:
           $ref: '#/components/schemas/WebTemplateValidation'
-    TemplateResponseData: {}
-    WebTemplateAnnotation:
+    WebTemplateInput:
       type: object
       properties:
-        comment:
+        suffix:
           type: string
-        other:
-          type: object
-          additionalProperties:
-            type: string
+        type:
+          type: string
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebTemplateInputValue'
+        listOpen:
+          type: boolean
+        validation:
+          $ref: '#/components/schemas/WebTemplateValidation'
+        terminology:
+          type: string
+        defaultValue:
+          type: string
 externalDocs:
   description: EHRbase Documentation
   url: https://docs.ehrbase.org/

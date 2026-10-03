@@ -103,16 +103,16 @@ paths:
                 $ref: '#/components/schemas/AdminDeleteResponseData'
 components:
   schemas:
-    AdminUpdateResponseData:
-      type: object
-      properties:
-        updated:
-          type: integer
-          format: int32
     AdminDeleteResponseData:
       type: object
       properties:
         deleted:
+          type: integer
+          format: int32
+    AdminUpdateResponseData:
+      type: object
+      properties:
+        updated:
           type: integer
           format: int32
 externalDocs:

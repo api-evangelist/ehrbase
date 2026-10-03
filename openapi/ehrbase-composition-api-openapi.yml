@@ -455,6 +455,34 @@ paths:
                 type: string
 components:
   schemas:
+    ActionRestResponseData:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        action:
+          type: string
+          enum:
+          - RETRIEVE
+          - CREATE
+          - UPDATE
+          - MERGE
+          - DELETE
+    CompositionWriteRestResponseData:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        action:
+          type: string
+          enum:
+          - RETRIEVE
+          - CREATE
+          - UPDATE
+          - MERGE
+          - DELETE
+        compositionUid:
+          type: string
     CompositionResponseData:
       type: object
       properties:
@@ -487,39 +515,6 @@ components:
           format: uuid
         compositionUid:
           type: string
-    ActionRestResponseData:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/Meta'
-        action:
-          type: string
-          enum:
-          - RETRIEVE
-          - CREATE
-          - UPDATE
-          - MERGE
-          - DELETE
-    RestHref:
-      type: object
-      properties:
-        url:
-          type: string
-    CompositionWriteRestResponseData:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/Meta'
-        action:
-          type: string
-          enum:
-          - RETRIEVE
-          - CREATE
-          - UPDATE
-          - MERGE
-          - DELETE
-        compositionUid:
-          type: string
     Meta:
       type: object
       properties:
@@ -538,6 +533,11 @@ components:
           - XML
           - JSON
         value:
+          type: string
+    RestHref:
+      type: object
+      properties:
+        url:
           type: string
 externalDocs:
   description: EHRbase Documentation
