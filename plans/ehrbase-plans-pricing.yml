@@ -53,3 +53,22 @@ plans:
       - Merge EHR
       - Service level agreements and professional services
     docs: https://docs.ehrbase.org/docs/EHRbase/Enterprise-Features/Overview
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - metered
+  units: []
+  plans:
+  - name: EHRbase (open source)
+    access: other
+    model: metered
+    model_how: derived
+    units: []
+    periods: []
+  - name: HIP EHRbase (commercial)
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
