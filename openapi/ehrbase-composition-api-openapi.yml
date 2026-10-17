@@ -455,26 +455,6 @@ paths:
                 type: string
 components:
   schemas:
-    RestHref:
-      type: object
-      properties:
-        url:
-          type: string
-    CompositionWriteRestResponseData:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/Meta'
-        action:
-          type: string
-          enum:
-          - RETRIEVE
-          - CREATE
-          - UPDATE
-          - MERGE
-          - DELETE
-        compositionUid:
-          type: string
     CompositionResponseData:
       type: object
       properties:
@@ -520,15 +500,26 @@ components:
           - UPDATE
           - MERGE
           - DELETE
-    Meta:
+    CompositionWriteRestResponseData:
       type: object
       properties:
-        href:
-          $ref: '#/components/schemas/RestHref'
-        precedingHref:
-          $ref: '#/components/schemas/RestHref'
-        nextHref:
-          $ref: '#/components/schemas/RestHref'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        action:
+          type: string
+          enum:
+          - RETRIEVE
+          - CREATE
+          - UPDATE
+          - MERGE
+          - DELETE
+        compositionUid:
+          type: string
+    RestHref:
+      type: object
+      properties:
+        url:
+          type: string
     StructuredString:
       type: object
       properties:
@@ -539,6 +530,15 @@ components:
           - JSON
         value:
           type: string
+    Meta:
+      type: object
+      properties:
+        href:
+          $ref: '#/components/schemas/RestHref'
+        precedingHref:
+          $ref: '#/components/schemas/RestHref'
+        nextHref:
+          $ref: '#/components/schemas/RestHref'
 externalDocs:
   description: EHRbase Documentation
   url: https://docs.ehrbase.org/

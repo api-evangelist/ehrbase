@@ -149,117 +149,25 @@ paths:
           description: Conflict, Unable to create a new EHR due to a conflict with an already existing EHR with the same subject id, namespace pair, whenever EHR_STATUS is supplied.
 components:
   schemas:
-    Link:
-      type: object
-      properties:
-        meaning:
-          $ref: '#/components/schemas/DvText'
-        type:
-          $ref: '#/components/schemas/DvText'
-        target:
-          $ref: '#/components/schemas/DvEHRURI'
-    DvDateTime:
+    FeederAuditDetails:
       type: 'null'
       properties:
-        normalStatus:
-          $ref: '#/components/schemas/CodePhrase'
-        normalRange:
-          $ref: '#/components/schemas/DvIntervalDvDateTime'
-        otherReferenceRanges:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ReferenceRangeDvDateTime'
-        magnitudeStatus:
+        systemId:
+          type: string
+        location:
+          $ref: '#/components/schemas/PartyIdentified'
+        provider:
+          $ref: '#/components/schemas/PartyIdentified'
+        subject:
+          $ref: '#/components/schemas/PartyProxy'
+        time:
+          $ref: '#/components/schemas/DvDateTime'
+        versionId:
           type:
           - string
           - 'null'
-        accuracy:
-          $ref: '#/components/schemas/DvDuration'
-        value: {}
-    TermMapping:
-      type: object
-      properties:
-        match:
-          type: string
-        purpose:
-          $ref: '#/components/schemas/DvCodedText'
-        target:
-          $ref: '#/components/schemas/CodePhrase'
-    CodePhrase:
-      type: 'null'
-      properties:
-        terminologyId:
-          $ref: '#/components/schemas/TerminologyId'
-        codeString:
-          type: string
-        preferredTerm:
-          type:
-          - string
-          - 'null'
-    PartyRef:
-      type: 'null'
-      properties:
-        namespace:
-          type: string
-        type:
-          type: string
-        id:
-          $ref: '#/components/schemas/ObjectId'
-    ReferenceRangeDvDateTime:
-      type: object
-      properties:
-        range:
-          $ref: '#/components/schemas/DvIntervalDvDateTime'
-        meaning:
-          $ref: '#/components/schemas/DvText'
-    PartyIdentified:
-      type: 'null'
-      properties:
-        externalRef:
-          $ref: '#/components/schemas/PartyRef'
-        name:
-          type:
-          - string
-          - 'null'
-        identifiers:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DvIdentifier'
-    TemplateId:
-      type: 'null'
-      properties:
-        value:
-          type: string
-    FeederAudit:
-      type: 'null'
-      properties:
-        originatingSystemItemIds:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DvIdentifier'
-        feederSystemItemIds:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/DvIdentifier'
-        originalContent:
-          $ref: '#/components/schemas/DvEncapsulated'
-        originatingSystemAudit:
-          $ref: '#/components/schemas/FeederAuditDetails'
-        feederSystemAudit:
-          $ref: '#/components/schemas/FeederAuditDetails'
-    UIDBasedId:
-      type: 'null'
-      properties:
-        value:
-          type: string
+        otherDetails:
+          $ref: '#/components/schemas/ItemStructure'
     Ehr:
       type: object
       properties:
@@ -293,6 +201,103 @@ components:
             $ref: '#/components/schemas/ObjectRefObjectId'
         timeCreated:
           $ref: '#/components/schemas/DvDateTime'
+    ObjectId:
+      type: object
+      properties:
+        value:
+          type: string
+    PartySelf:
+      type: object
+      properties:
+        externalRef:
+          $ref: '#/components/schemas/PartyRef'
+    ObjectRefObjectId:
+      type: object
+      properties:
+        namespace:
+          type: string
+        type:
+          type: string
+        id:
+          $ref: '#/components/schemas/ObjectId'
+    HierObjectId:
+      type: object
+      properties:
+        value:
+          type: string
+    EhrStatus:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/DvText'
+        archetypeNodeId:
+          type: string
+        uid:
+          $ref: '#/components/schemas/UIDBasedId'
+        archetypeDetails:
+          $ref: '#/components/schemas/Archetyped'
+        feederAudit:
+          $ref: '#/components/schemas/FeederAudit'
+        links:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Link'
+        subject:
+          $ref: '#/components/schemas/PartySelf'
+        otherDetails:
+          $ref: '#/components/schemas/ItemStructure'
+        path:
+          type: string
+        is_modifiable:
+          type: boolean
+        is_queryable:
+          type: boolean
+    ReferenceRangeDvDateTime:
+      type: object
+      properties:
+        range:
+          $ref: '#/components/schemas/DvIntervalDvDateTime'
+        meaning:
+          $ref: '#/components/schemas/DvText'
+    TerminologyId:
+      type: object
+      properties:
+        value:
+          type: string
+    Archetyped:
+      type: 'null'
+      properties:
+        archetypeId:
+          $ref: '#/components/schemas/ArchetypeID'
+        templateId:
+          $ref: '#/components/schemas/TemplateId'
+        rmVersion:
+          type: string
+    DvIdentifier:
+      type: object
+      properties:
+        issuer:
+          type:
+          - string
+          - 'null'
+        assigner:
+          type:
+          - string
+          - 'null'
+        id:
+          type: string
+        type:
+          type:
+          - string
+          - 'null'
+    DvEHRURI:
+      type: object
+      properties:
+        value:
+          type: string
+          format: uri
     DvText:
       type: object
       properties:
@@ -314,49 +319,58 @@ components:
           $ref: '#/components/schemas/CodePhrase'
         encoding:
           $ref: '#/components/schemas/CodePhrase'
-    DvEncapsulated:
+    PartyProxy:
       type: 'null'
       properties:
-        charset:
-          $ref: '#/components/schemas/CodePhrase'
-        language:
-          $ref: '#/components/schemas/CodePhrase'
-    HierObjectId:
+        externalRef:
+          $ref: '#/components/schemas/PartyRef'
+    PartyRef:
+      type: 'null'
+      properties:
+        namespace:
+          type: string
+        type:
+          type: string
+        id:
+          $ref: '#/components/schemas/ObjectId'
+    UIDBasedId:
+      type: 'null'
+      properties:
+        value:
+          type: string
+    TermMapping:
       type: object
       properties:
-        value:
+        match:
           type: string
-    ItemStructure:
+        purpose:
+          $ref: '#/components/schemas/DvCodedText'
+        target:
+          $ref: '#/components/schemas/CodePhrase'
+    DvIntervalDvDateTime:
       type: 'null'
       properties:
-        name:
+        lower:
+          $ref: '#/components/schemas/DvDateTime'
+        upper:
+          $ref: '#/components/schemas/DvDateTime'
+        lowerUnbounded:
+          type: boolean
+        upperUnbounded:
+          type: boolean
+        lowerIncluded:
+          type: boolean
+        upperIncluded:
+          type: boolean
+    Link:
+      type: object
+      properties:
+        meaning:
           $ref: '#/components/schemas/DvText'
-        archetypeNodeId:
-          type: string
-        uid:
-          $ref: '#/components/schemas/UIDBasedId'
-        archetypeDetails:
-          $ref: '#/components/schemas/Archetyped'
-        feederAudit:
-          type: 'null'
-        links:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Link'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Item'
-        path:
-          type: string
-    DvURI:
-      type: 'null'
-      properties:
-        value:
-          type: string
-          format: uri
+        type:
+          $ref: '#/components/schemas/DvText'
+        target:
+          $ref: '#/components/schemas/DvEHRURI'
     DvDuration:
       type: 'null'
       properties:
@@ -406,31 +420,27 @@ components:
           $ref: '#/components/schemas/DvIntervalDvDuration'
         meaning:
           $ref: '#/components/schemas/DvText'
-    TerminologyId:
-      type: object
+    DvURI:
+      type: 'null'
       properties:
         value:
           type: string
-    DvIntervalDvDuration:
+          format: uri
+    PartyIdentified:
       type: 'null'
-      properties:
-        lower:
-          $ref: '#/components/schemas/DvDuration'
-        upper:
-          $ref: '#/components/schemas/DvDuration'
-        lowerUnbounded:
-          type: boolean
-        upperUnbounded:
-          type: boolean
-        lowerIncluded:
-          type: boolean
-        upperIncluded:
-          type: boolean
-    PartySelf:
-      type: object
       properties:
         externalRef:
           $ref: '#/components/schemas/PartyRef'
+        name:
+          type:
+          - string
+          - 'null'
+        identifiers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DvIdentifier'
     Item:
       type: object
       properties:
@@ -452,80 +462,13 @@ components:
             $ref: '#/components/schemas/Link'
         path:
           type: string
-    FeederAuditDetails:
+    DvEncapsulated:
       type: 'null'
       properties:
-        systemId:
-          type: string
-        location:
-          $ref: '#/components/schemas/PartyIdentified'
-        provider:
-          $ref: '#/components/schemas/PartyIdentified'
-        subject:
-          $ref: '#/components/schemas/PartyProxy'
-        time:
-          $ref: '#/components/schemas/DvDateTime'
-        versionId:
-          type:
-          - string
-          - 'null'
-        otherDetails:
-          $ref: '#/components/schemas/ItemStructure'
-    DvIdentifier:
-      type: object
-      properties:
-        issuer:
-          type:
-          - string
-          - 'null'
-        assigner:
-          type:
-          - string
-          - 'null'
-        id:
-          type: string
-        type:
-          type:
-          - string
-          - 'null'
-    ObjectRefObjectId:
-      type: object
-      properties:
-        namespace:
-          type: string
-        type:
-          type: string
-        id:
-          $ref: '#/components/schemas/ObjectId'
-    EhrStatus:
-      type: object
-      properties:
-        name:
-          $ref: '#/components/schemas/DvText'
-        archetypeNodeId:
-          type: string
-        uid:
-          $ref: '#/components/schemas/UIDBasedId'
-        archetypeDetails:
-          $ref: '#/components/schemas/Archetyped'
-        feederAudit:
-          $ref: '#/components/schemas/FeederAudit'
-        links:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Link'
-        subject:
-          $ref: '#/components/schemas/PartySelf'
-        otherDetails:
-          $ref: '#/components/schemas/ItemStructure'
-        path:
-          type: string
-        is_modifiable:
-          type: boolean
-        is_queryable:
-          type: boolean
+        charset:
+          $ref: '#/components/schemas/CodePhrase'
+        language:
+          $ref: '#/components/schemas/CodePhrase'
     DvCodedText:
       type: 'null'
       properties:
@@ -543,12 +486,6 @@ components:
           $ref: '#/components/schemas/CodePhrase'
         definingCode:
           $ref: '#/components/schemas/CodePhrase'
-    DvEHRURI:
-      type: object
-      properties:
-        value:
-          type: string
-          format: uri
     ArchetypeID:
       type: object
       properties:
@@ -605,22 +542,58 @@ components:
           type: string
         fullId:
           type: string
-    Archetyped:
+    DvDateTime:
       type: 'null'
       properties:
-        archetypeId:
-          $ref: '#/components/schemas/ArchetypeID'
-        templateId:
-          $ref: '#/components/schemas/TemplateId'
-        rmVersion:
+        normalStatus:
+          $ref: '#/components/schemas/CodePhrase'
+        normalRange:
+          $ref: '#/components/schemas/DvIntervalDvDateTime'
+        otherReferenceRanges:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReferenceRangeDvDateTime'
+        magnitudeStatus:
+          type:
+          - string
+          - 'null'
+        accuracy:
+          $ref: '#/components/schemas/DvDuration'
+        value: {}
+    ItemStructure:
+      type: 'null'
+      properties:
+        name:
+          $ref: '#/components/schemas/DvText'
+        archetypeNodeId:
           type: string
-    DvIntervalDvDateTime:
+        uid:
+          $ref: '#/components/schemas/UIDBasedId'
+        archetypeDetails:
+          $ref: '#/components/schemas/Archetyped'
+        feederAudit:
+          type: 'null'
+        links:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Link'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        path:
+          type: string
+    DvIntervalDvDuration:
       type: 'null'
       properties:
         lower:
-          $ref: '#/components/schemas/DvDateTime'
+          $ref: '#/components/schemas/DvDuration'
         upper:
-          $ref: '#/components/schemas/DvDateTime'
+          $ref: '#/components/schemas/DvDuration'
         lowerUnbounded:
           type: boolean
         upperUnbounded:
@@ -629,16 +602,43 @@ components:
           type: boolean
         upperIncluded:
           type: boolean
-    PartyProxy:
+    CodePhrase:
       type: 'null'
       properties:
-        externalRef:
-          $ref: '#/components/schemas/PartyRef'
-    ObjectId:
-      type: object
+        terminologyId:
+          $ref: '#/components/schemas/TerminologyId'
+        codeString:
+          type: string
+        preferredTerm:
+          type:
+          - string
+          - 'null'
+    TemplateId:
+      type: 'null'
       properties:
         value:
           type: string
+    FeederAudit:
+      type: 'null'
+      properties:
+        originatingSystemItemIds:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DvIdentifier'
+        feederSystemItemIds:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DvIdentifier'
+        originalContent:
+          $ref: '#/components/schemas/DvEncapsulated'
+        originatingSystemAudit:
+          $ref: '#/components/schemas/FeederAuditDetails'
+        feederSystemAudit:
+          $ref: '#/components/schemas/FeederAuditDetails'
 externalDocs:
   description: EHRbase Documentation
   url: https://docs.ehrbase.org/
